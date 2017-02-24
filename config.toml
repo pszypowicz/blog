@@ -1,3 +1,13 @@
 languageCode = "pl-PL"
 title = "Tech Haven"
 baseurl = "http://techhaven.io/"
+
+DefaultContentLanguage = "pl"
+defaultContentLanguageInSubdir= true
+
+[Languages]
+[Languages.en]
+weight = 1
+
+[Languages.pl]
+weight = 2
