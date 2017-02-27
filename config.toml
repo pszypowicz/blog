@@ -1,6 +1,6 @@
 languageCode = "pl-PL"
 title = "Tech Haven"
-baseurl = "http://techhaven.io/"
+baseurl = "https://techhaven.io/"
 
 DefaultContentLanguage = "pl"
 defaultContentLanguageInSubdir= true
