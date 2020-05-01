@@ -1,7 +1,7 @@
 baseURL = "https://blog.szypowi.cz"
-title = "blog szypowi.cz"
+title = "blog.szypowi.cz"
 theme = "hugo-notepadium"
-copyright = "©2019 TechHaven."
+copyright = "©2019 szypowi.cz."
 
 languageCode = "pl-pl"
 defaultContentLanguageInSubdir= true
@@ -25,7 +25,7 @@ unsafe = true  # enable raw HTML in Markdown
 style = "auto"  # default: auto. light: light theme, dark: dark theme, auto: based on system.
 dateFormat = "Monday, January 2, 2006"  # if unset, default is "2006-01-02"
 logo = ""  # if you have a logo png
-slogan = "hitchhiking through raw bits"
+slogan = "Hitchhiking through raw bits"
 license = ""  # CC License
 fullRss = true # Puts entire HTML post into rss 'description' tag. If unset, default is false.
 
