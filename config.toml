@@ -1,5 +1,5 @@
-baseURL = "https://techhaven.io"
-title = "/dev/blog"
+baseURL = "https://blog.szypowi.cz"
+title = "blog szypowi.cz"
 theme = "hugo-notepadium"
 copyright = "©2019 TechHaven."
 
