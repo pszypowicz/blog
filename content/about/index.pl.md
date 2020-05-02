@@ -1,5 +1,6 @@
 +++
 title = "O mnie"
+comments = false
 +++
 
 Cześć, dzięki że się tutaj zatrzymałeś.
