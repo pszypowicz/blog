@@ -9,7 +9,7 @@ This guide will help you configure Fractional Scaling (later called FS) on ubunt
 
 # Wayland
 
-At the moment, ubuntu sees wayland users as 'just 1%'[^3], so feel pretty special if you choose this path :)
+At the moment, ubuntu sees wayland users as 'less than 1%'[^3], so feel pretty special if you choose this path :)
 
 [^3]: [Enable fractional scaling toggle does not work](https://bugs.launchpad.net/ubuntu/+source/gnome-control-center/+bug/1871864)
 
