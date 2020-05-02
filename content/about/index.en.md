@@ -1,5 +1,6 @@
 +++
 title = "About me"
+comments = false
 +++
 
 Hey, thanks for stopping by!
