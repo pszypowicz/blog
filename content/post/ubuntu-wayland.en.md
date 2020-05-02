@@ -7,11 +7,19 @@ categories = ["linux"]
 +++
 This guide will help you configure Fractional Scaling (later called FS) on ubuntu 20.04 and wayland session.
 
+# Wayland
+
 At the moment, ubuntu sees wayland users as 'just 1%'[^3], so feel pretty special if you choose this path :)
 
 [^3]: [Enable fractional scaling toggle does not work](https://bugs.launchpad.net/ubuntu/+source/gnome-control-center/+bug/1871864)
 
+## Enable
+
 To enable wayland session follow this doc: https://linuxconfig.org/how-to-enable-disable-wayland-on-ubuntu-20-04-desktop
+
+## Test
+
+### CLI
 
 Test if your current session is wayland based[^1]:
 
@@ -41,6 +49,7 @@ $ loginctl show-session $(awk '/tty/ {print $1}' <(loginctl)) -p Type | awk -F= 
 wayland
 ```
 
+## Fractional Scaling
 
 To enable wayland FS, type in terminal:
 
