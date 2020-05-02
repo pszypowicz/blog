@@ -19,6 +19,12 @@ To enable wayland session follow this doc: https://linuxconfig.org/how-to-enable
 
 ## Test
 
+### GUI
+
+Go to "Settings" app -> "About" and you will find "Windowing system" field.
+
+![Settings about section](/img/settings-about.png)
+
 ### CLI
 
 Test if your current session is wayland based[^1]:
