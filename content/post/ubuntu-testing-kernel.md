@@ -1,83 +1,70 @@
 +++
-date = "2020-05-15T10:04:54+01:00"
-title = "Testing and signing kernel for Ubuntu 20.04"
-tags = ["kernel", "linux", "ubuntu", "secure boot"]
-categories = ["linux"]
-
+title       = "Testing and signing kernel for Ubuntu 20.04"
+date        = "2020-05-15T10:04:54+01:00"
+description = "Install a mainline kernel on Ubuntu 20.04 via ubuntu-mainline-kernel.sh and sign it with your MOK key so Secure Boot keeps working."
+tags        = ["kernel", "linux", "ubuntu", "secure boot"]
+categories  = ["linux"]
 +++
-Disclaimer!
 
-This a information regarding mainline kernel, copied from the ubuntu wiki:
+> **Disclaimer.** This is about mainline kernel builds, summarized from the Ubuntu wiki:
+>
+> By default, Ubuntu systems run with the Ubuntu kernels provided by the Ubuntu repositories. However it is handy to test unmodified upstream kernels to help locate problems in Ubuntu kernel patches, or to confirm that upstream has fixed a specific issue. These kernels are not supported and are not appropriate for production use.
 
-_By default, Ubuntu systems run with the Ubuntu kernels provided by the Ubuntu repositories. However it is handy to be able to test with unmodified upstream kernels to help locate problems in Ubuntu kernel patches, or to confirm that upstream has fixed a specific issue. To this end we now offer select upstream kernel builds. These kernels are made from unmodified kernel source but using the Ubuntu kernel configuration files. These are then packaged as Ubuntu .deb files for simple installation, saving you the time of compiling kernels, and debugging build issues._
+## Install a mainline kernel via PPA
 
-_These kernels are not supported and are not appropriate for production use._
+Detailed official instructions: <https://wiki.ubuntu.com/Kernel/MainlineBuilds>.
 
+There is a semi-automated wrapper that makes this much less painful:
+<https://github.com/pimlie/ubuntu-mainline-kernel.sh>
 
-
-
-# Install kernel from PPA mainline
-
-For detailed instruction follow this link: https://wiki.ubuntu.com/Kernel/MainlineBuilds
-
-BUT, there is a semi-automated way to install the version of kernel of your choice:
-
-For more information and installation procedure follow instruction on this site: https://github.com/pimlie/ubuntu-mainline-kernel.sh
-
-## Using ubuntu-mainline-kernel to install rc release
-
-For testing the rc release of the kernel, do:
+### Install an RC release
 
 ```bash
 sudo ubuntu-mainline-kernel.sh --rc -i
 ```
 
-## MOK keys
+## MOK keys (Secure Boot)
 
-If you are using ubuntu 20.04 and during installation
-1. Had "Secure Boot" enabled
-2. Choosed to install 3rd party drivers
-
-There is a chance you were asked to enroll new key in MOK, which is automatically used to sign new
-kernel modules.
-
-Those keys are available in location
+If you installed Ubuntu 20.04 with Secure Boot enabled **and** chose to install third-party drivers, you were probably asked to enroll a new key in MOK. That key is then used to sign new kernel modules automatically. It lives at:
 
 ```bash
-$ ls /var/lib/shim-signed/mok/*
-/var/lib/shim-signed/mok/MOK.der  /var/lib/shim-signed/mok/MOK.priv
+$ ls /var/lib/shim-signed/mok/
+MOK.der  MOK.priv
 ```
 
-To use the to sign kernel as well we have to transform the MOK.der key to the PEM format and to do so type:
+To sign the kernel itself you need the key in PEM form:
 
 ```bash
 $ cd /var/lib/shim-signed/mok
 $ sudo openssl x509 -in MOK.der -inform DER -outform PEM -out MOK.pem
 ```
 
-## Sign your kernel
+## Sign the kernel
 
-1. Sign the vmlinuz kernel of your choice
+1. Sign the `vmlinuz` of your choice:
 
-    ```bash
-    sudo sbsign --key /var/lib/shim-signed/mok/MOK.priv --cert /var/lib/shim-signed/mok/MOK.pem /boot/vmlinuz-[KERNEL-VERSION]-generic --output /boot/vmlinuz-[KERNEL-VERSION]-generic.signed
-    ```
+   ```bash
+   sudo sbsign --key /var/lib/shim-signed/mok/MOK.priv \
+               --cert /var/lib/shim-signed/mok/MOK.pem \
+               /boot/vmlinuz-[KERNEL-VERSION]-generic \
+               --output /boot/vmlinuz-[KERNEL-VERSION]-generic.signed
+   ```
 
-2. Copy the initram to create a pair with signed vmlinuz image
+2. Copy the initrd so it pairs with the signed vmlinuz:
 
-    ```bash
-    $ sudo cp /boot/initrd.img-[KERNEL-VERSION]-generic{,.signed}
-    ```
+   ```bash
+   sudo cp /boot/initrd.img-[KERNEL-VERSION]-generic{,.signed}
+   ```
 
-3. Update GRUB
+3. Update GRUB:
 
-    ```bash
-    $ sudo update-grub
-    ```
+   ```bash
+   sudo update-grub
+   ```
 
-## Rebot and test
+## Reboot and test
 
-After reboot choose in grub entry of the signed kernel, and if system boots up properly and you want to keep the configuration, you can overwrite unsigned version of your kernel and call `update-grub` again
+Pick the `.signed` entry in GRUB. If the system boots cleanly and you want to keep the configuration, overwrite the unsigned files with the signed ones and run `update-grub` again:
 
 ```bash
 sudo mv /boot/vmlinuz-[KERNEL-VERSION]-generic{.signed,}

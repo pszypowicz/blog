@@ -1,0 +1,11 @@
+[[main]]
+    identifier = ""
+    name       = ""
+    url        = ""
+
+[[social]]
+    identifier = "github"
+    name       = "GitHub"
+    url        = "https://github.com/pszypowicz"
+    [social.params]
+        icon = "brand-github"
