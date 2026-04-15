@@ -1,0 +1,21 @@
+# Hugo build output
+/public/
+/resources/_gen/
+.hugo_build.lock
+
+# Node / LHCI
+node_modules/
+.lighthouseci/
+*.log
+npm-debug.log*
+
+# Editor / OS
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*~
+
+# Local env
+.env
+.env.local

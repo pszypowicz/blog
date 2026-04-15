@@ -1,0 +1,41 @@
+# pre-commit config - see https://pre-commit.com
+#
+# Install the hook into this repo (one-time):
+#   pre-commit install
+#
+# Run against all files manually:
+#   pre-commit run --all-files
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: ["--maxkb=200"]
+      - id: mixed-line-ending
+        args: ["--fix=lf"]
+
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.10.0.1
+    hooks:
+      - id: shellcheck
+        files: \.(sh|bash)$
+
+  - repo: local
+    hooks:
+      - id: perf-budget
+        name: Perf budget (scripts/budget.sh - enforces CLAUDE.md)
+        entry: scripts/budget.sh
+        language: system
+        pass_filenames: false
+        always_run: false
+        files: ^(content/|layouts/|assets/|static/|themes/|config\.toml|hugo\.toml|hugo\.yaml)
+        description: >
+          Build the site and enforce the byte / single-packet / zero-JS
+          budgets defined in CLAUDE.md. Only fires when site sources change.
