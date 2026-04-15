@@ -1,0 +1,8 @@
+[en]
+    languageName = "English"
+    title        = "blog.szypowi.cz"
+    weight       = 1
+
+    [en.params.sidebar]
+        compact  = false
+        subtitle = "Hitchhiking through raw bits"

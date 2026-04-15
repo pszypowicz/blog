@@ -1,0 +1,12 @@
+{{/*
+    Inline the compiled stylesheet in <head>.
+
+    Rationale: see CLAUDE.md "14 KB rule". Inlining eliminates the
+    render-blocking <link rel=stylesheet> request and keeps first
+    paint to a single network round-trip for the whole HTML+CSS
+    payload. Fingerprinting is preserved via SRI on the style element
+    for in-page integrity even though there is no external asset.
+*/}}
+{{- $sass := resources.Get "scss/style.scss" -}}
+{{- $style := $sass | toCSS (dict "outputStyle" "compressed") | minify | fingerprint "sha256" -}}
+<style>{{ $style.Content | safeCSS }}</style>

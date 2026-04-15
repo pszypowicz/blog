@@ -1,0 +1,38 @@
+baseURL                = "https://blog.szypowi.cz/"
+languageCode           = "en-us"
+title                  = "blog.szypowi.cz"
+theme                  = "hugo-theme-stack"
+defaultContentLanguage = "en"
+hasCJKLanguage         = false
+
+enableRobotsTXT = true
+enableEmoji     = false
+enableGitInfo   = false
+buildDrafts     = false
+buildFuture     = false
+buildExpired    = false
+
+[pagination]
+    pagerSize = 20
+
+[permalinks]
+    post = "/p/:slug/"
+    page = "/:slug/"
+
+[minify]
+    disableXML   = false
+    minifyOutput = true
+    [minify.tdewolff]
+        [minify.tdewolff.html]
+            keepWhitespace = false
+
+[related]
+    includeNewer = true
+    threshold    = 60
+    toLower      = false
+    [[related.indices]]
+        name   = "tags"
+        weight = 100
+    [[related.indices]]
+        name   = "categories"
+        weight = 200
