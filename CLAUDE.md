@@ -77,19 +77,22 @@ The repo still lives on GitHub. Cloudflare Pages builds directly from the GitHub
 
 ## CSS strategy
 
-1. **Inline critical CSS in `<head>`**. Extract with `critical` or a Hugo partial that collects only selectors used in the above-fold markup. Hashed-and-Fingerprinted into the HTML.
-2. **Defer non-critical CSS** with the standard trick:
+1. **Inline critical CSS in `<head>`**. `assets/scss/critical.scss` pulls only above-fold partials (reset, grid, menu, sidebar, article cards, layout/article, Cascadia fonts) and is compiled + fingerprinted + inlined as `<style>` by `layouts/_partials/head/style.html`.
+2. **Defer non-critical CSS** (`assets/scss/rest.scss`) as a hashed external stylesheet via the standard trick:
    ```html
    <link
      rel="preload"
-     href="/css/rest.css"
+     href="/scss/rest.min.<hash>.css"
      as="style"
      onload="this.onload=null;this.rel='stylesheet'"
    />
-   <noscript><link rel="stylesheet" href="/css/rest.css" /></noscript>
+   <noscript
+     ><link rel="stylesheet" href="/scss/rest.min.<hash>.css"
+   /></noscript>
    ```
+   Contents: footer, pagination, widgets, listing-page layout, 404 page, and the ~860-line chroma syntax-highlight block. `_headers` sets `Cache-Control: public, max-age=31536000, immutable` on `/*.css` so returning visitors hit the browser cache on every page after the first.
 3. **No `@import` in CSS**. Concatenate at build time.
-4. **Purge unused rules** against the actual rendered HTML (PurgeCSS or equivalent in Hugo Pipes).
+4. **Purge unused rules** against the actual rendered HTML. Today this is done by overriding `assets/scss/critical.scss` and `assets/scss/variables.scss` at the site level so upstream Stack imports we do not use (search, cookie banner, chroma on first paint) never enter the compiled output. Revisit PurgeCSS if more aggressive trimming is needed.
 5. **Scoped styles** only where actually needed. Stack ships a lot of SCSS we do not use - strip it.
 
 ## JavaScript strategy
