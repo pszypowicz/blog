@@ -1,0 +1,32 @@
+/*
+ * Critical CSS - inlined in <head> and counted against the 14 KB
+ * first-flight budget.
+ *
+ * Contains the above-the-fold skeleton: reset, layout grid, typography,
+ * menu, sidebar, article cards, and the Cascadia Code font declarations.
+ * Below-fold partials (footer, pagination, widgets, layout/list,
+ * layout/404) plus the ~860-line chroma syntax-highlight block live in
+ * `rest.scss`, which is loaded as an external hashed stylesheet and
+ * cached forever by `_headers`.
+ *
+ * `variables.scss` resolves to the site-level override next to this
+ * file, which omits the `@import partials/highlight/*.scss` lines from
+ * the upstream copy - those imports move to `rest.scss` so the chroma
+ * CSS stays on the deferred path.
+ */
+
+@import "breakpoints.scss";
+@import "variables.scss";
+@import "mixins.scss";
+@import "grid.scss";
+
+@import "external/normalize.scss";
+
+@import "partials/menu.scss";
+@import "partials/article.scss";
+@import "partials/sidebar.scss";
+@import "partials/base.scss";
+@import "partials/layout/article.scss";
+
+@import "general.scss";
+@import "custom.scss";
