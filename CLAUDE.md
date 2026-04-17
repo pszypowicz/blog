@@ -161,7 +161,7 @@ Every change goes through the test suite in `scripts/`. A PR that does not run c
 
 - `scripts/bench.sh` - build the site, compute raw/gzip/brotli sizes, print the single-packet fit report. Fails loudly if the 14 KB rule is violated.
 - `scripts/budget.sh` - enforce the byte budgets table above. One exit code per budget. CI-friendly.
-- `scripts/lighthouse.sh` - spin up a local Hugo server, run Lighthouse via `lhci`, assert the Core Web Vitals thresholds above. Uses `.lighthouserc.json` as the budget source of truth.
+- `scripts/lighthouse.sh` - spin up a local Hugo server, run Lighthouse via `lhci`, assert the Core Web Vitals thresholds above. Uses `.lighthouserc.local.json` locally and `.lighthouserc.prod.json` when invoked with `--prod`. The two configs differ only on server-dependent audits (`uses-text-compression`, `uses-long-cache-ttl`): strict in prod, `warn` locally because `python3 -m http.server` sends neither Brotli nor cache headers.
 - `scripts/http-verify.sh` - against the deployed URL, verify: TLS 1.3 is negotiated, HTTP/3 is advertised, Brotli is served, immutable cache headers are present on hashed assets, ETag revalidation returns 304 on HTML.
 
 Tooling required (install once):
