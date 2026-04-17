@@ -1,49 +1,17 @@
 /*
- *  Tastefully nerdy, budget-aware.
+ * Critical-path slice of the Cascadia Code setup.
  *
- *  First paint uses a system stack only. Cascadia Code is declared with
- *  font-display: optional - on a cold visit the system fallback always
- *  wins (<=100ms block period); on a warm visit the cached font swaps
- *  in with zero CLS thanks to the metric overrides tuned to match the
- *  system monospace fallback. This satisfies the CLAUDE.md rule
- *  "zero web-font bytes on first paint".
+ * Kept above the fold:
+ *   - the --mono-stack custom property (referenced by above-fold
+ *     selectors like .site-name, .menu a, .article-title)
+ *   - the fallback-assignment selectors themselves
+ *
+ * Deferred to rest.scss via `custom-rest.scss`:
+ *   - the @font-face declarations (font itself loads after first paint
+ *     anyway thanks to font-display: optional)
+ *   - rules that only apply inside .article-content / .highlight (post
+ *     body only, never above the fold)
  */
-
-@font-face {
-    font-family: "Cascadia Code";
-    font-style: normal;
-    font-weight: 200 700;
-    font-display: optional;
-    src: url("/fonts/cascadia/cascadia-code-latin-wght-normal.woff2")
-         format("woff2-variations"),
-         url("/fonts/cascadia/cascadia-code-latin-wght-normal.woff2")
-         format("woff2");
-    /* Metric overrides tuned so that when Cascadia eventually swaps
-       in (warm visits), the line box matches the system monospace
-       fallback and nothing reflows. */
-    size-adjust: 100%;
-    ascent-override: 90%;
-    descent-override: 25%;
-    line-gap-override: 0%;
-    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
-                   U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122,
-                   U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-
-@font-face {
-    font-family: "Cascadia Code";
-    font-style: italic;
-    font-weight: 200 700;
-    font-display: optional;
-    src: url("/fonts/cascadia/cascadia-code-latin-wght-italic.woff2")
-         format("woff2-variations"),
-         url("/fonts/cascadia/cascadia-code-latin-wght-italic.woff2")
-         format("woff2");
-    size-adjust: 100%;
-    ascent-override: 90%;
-    descent-override: 25%;
-    line-gap-override: 0%;
-}
 
 :root {
     /* Progressive font stack: system first, Cascadia upgrades in
@@ -71,31 +39,9 @@
 .article-title a,
 .article-details .article-time,
 .article-details .article-category,
-.article-list--compact .article-title,
 .section-title,
 .article-tags a,
 .widget-title {
     font-family: var(--mono-stack);
     font-feature-settings: "calt" 1, "liga" 1;
-}
-
-.article-content {
-    h1, h2, h3, h4, h5, h6 {
-        font-family: var(--mono-stack);
-        font-feature-settings: "calt" 1, "liga" 1;
-    }
-    code, pre, kbd, samp {
-        font-family: var(--mono-stack);
-        font-feature-settings: "calt" 1, "liga" 1, "ss01" 1, "ss02" 1;
-        font-variant-ligatures: contextual;
-    }
-}
-
-.highlight pre,
-.highlight code,
-pre.chroma,
-.chroma code {
-    font-family: var(--mono-stack);
-    font-feature-settings: "calt" 1, "liga" 1;
-    font-variant-ligatures: contextual;
 }
