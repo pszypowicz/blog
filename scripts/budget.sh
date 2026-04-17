@@ -21,10 +21,11 @@ HUGO=${HUGO:-hugo}
 BROTLI=${BROTLI:-brotli}
 
 # ---- budget constants (keep in sync with CLAUDE.md) --------------------------
-# The 14 KB rule is the only hard per-page byte budget. HTML and CSS are
-# measured together because critical CSS is inlined into <head>, so the
-# two are part of the same first-flight payload.
-BUDGET_SINGLE_PACKET_BR=14000       # HTML + render-blocking CSS, brotli-q11
+# HTML and CSS are measured together because critical CSS is inlined into
+# <head>, so the two are part of the same first-flight payload.
+BUDGET_SINGLE_PACKET_BR=14000       # HTML + render-blocking CSS, brotli-q11 (14 KB rule)
+BUDGET_HOME_HTML_BR=6100            # homepage HTML+inline-CSS brotli (CLAUDE.md target 6,000 B; 100 B headroom for minor content churn)
+BUDGET_POST_HTML_BR=10000           # any post (/p/... or /post/...) HTML+inline-CSS brotli
 BUDGET_JS_FIRST_PAINT=0             # render-blocking <script> bytes on first paint
 INITCWND_BYTES=14600
 # Advisory only (printed, not enforced): total deploy size.
@@ -181,6 +182,20 @@ while IFS= read -r html; do
     if (( script_b > BUDGET_JS_FIRST_PAINT )); then
         fail "page '$rel' ships $script_b B of render-blocking JavaScript on first paint (budget: $BUDGET_JS_FIRST_PAINT B)"
     fi
+
+    # per-page-class HTML+inline-CSS budgets from CLAUDE.md
+    case "$rel" in
+        index.html)
+            if (( html_br > BUDGET_HOME_HTML_BR )); then
+                fail "home '$rel' $html_br B > $BUDGET_HOME_HTML_BR B home HTML+CSS budget"
+            fi
+            ;;
+        p/*/index.html|post/*/index.html)
+            if (( html_br > BUDGET_POST_HTML_BR )); then
+                fail "post '$rel' $html_br B > $BUDGET_POST_HTML_BR B post HTML+CSS budget"
+            fi
+            ;;
+    esac
 done < <(find public -name '*.html' -type f | sort)
 
 # Advisory: total deploy size (not a per-visitor metric, but warn if it balloons)

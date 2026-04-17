@@ -1,0 +1,212 @@
+/*
+ * Above-fold half of hugo-theme-stack's partials/layout/article.scss.
+ *
+ * Contains the post-page wrapper (`.article-page > .main-article`),
+ * the header block (`.article-header`), structural margins on
+ * `.article-content` + `.article-footer`, plus the table-of-contents
+ * styling. These selectors render above the fold on post pages.
+ *
+ * The huge `.article-content` prose block (headings, blockquotes,
+ * code, tables, alerts, KaTeX, kbd, etc.) lives in
+ * `partials/layout/article-rest.scss` and is pulled in by `rest.scss`.
+ *
+ * Sync procedure on theme upgrade:
+ *   diff themes/hugo-theme-stack/assets/scss/partials/layout/article.scss \
+ *        <(cat assets/scss/partials/layout/article.scss \
+ *              assets/scss/partials/layout/article-rest.scss)
+ * This file mirrors theme lines 1-193.
+ */
+
+.article-page {
+    &.hide-sidebar-sm .left-sidebar {
+        display: none;
+
+        @include respond(md) {
+            display: inherit;
+        }
+    }
+
+    .main-article {
+        background: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        overflow: hidden;
+
+        .article-header {
+            .article-image {
+                img {
+                    height: auto;
+                    width: 100%;
+                    max-height: 50vh;
+                    object-fit: cover;
+                }
+            }
+
+            .article-details {
+                padding: var(--card-padding);
+                padding-bottom: 0;
+            }
+        }
+
+        .article-content {
+            margin: var(--card-padding) 0;
+            color: var(--card-text-color-main);
+
+            .footnotes {
+                font-family: var(--base-font-family);
+            }
+
+            img {
+                max-width: 100%;
+                height: auto;
+            }
+        }
+
+        .article-footer {
+            margin: var(--card-padding);
+            gap: var(--spacing-2xl);
+        }
+    }
+}
+
+.toc-nav {
+    overflow-x: auto;
+    max-height: 75vh;
+
+    ol,
+    ul {
+        margin: 0;
+        padding: 0;
+    }
+
+    ol {
+        list-style-type: none;
+        counter-reset: item;
+
+        li a:first-of-type::before {
+            counter-increment: item;
+            content: counters(item, ".") ". ";
+            font-weight: bold;
+            margin-right: 5px;
+        }
+    }
+
+    &>ul {
+        padding: 0 1em;
+    }
+
+    li {
+        margin: var(--spacing-md) 0 var(--spacing-md) var(--spacing-lg);
+        padding: var(--spacing-xs);
+
+        &>ol,
+        &>ul {
+            margin-top: var(--spacing-sm);
+            padding-left: var(--spacing-sm);
+            margin-bottom: calc(var(--spacing-xs) * -1);
+
+            &>li:last-child {
+                margin-bottom: 0;
+            }
+        }
+    }
+
+    li.active-class>a {
+        border-left: var(--heading-border-size) solid var(--accent-color);
+        font-weight: bold;
+    }
+
+    ul li.active-class>a {
+        display: block;
+    }
+
+    @function repeat($str, $n) {
+        $result: "";
+
+        @for $_ from 0 to $n {
+            $result: $result + $str;
+        }
+
+        @return $result;
+    }
+
+    // Support up to 6 levels of indentation for lists in ToCs
+    @for $i from 0 to 5 {
+        &>ul #{repeat("> li > ul", $i)}>li.active-class>a {
+            $n: 25 + $i * 35;
+            margin-left: calc(-#{$n}px - 1em);
+            padding-left: calc(#{$n}px + 1em - var(--heading-border-size));
+        }
+
+        &>ol #{repeat("> li > ol", $i)}>li.active-class>a {
+            $n: 9 + $i * 35;
+            margin-left: calc(-#{$n}px - 1em);
+            padding-left: calc(#{$n}px + 1em - var(--heading-border-size));
+            display: block;
+        }
+    }
+}
+
+.widget--toc,
+.article-toc {
+    display: flex;
+    flex-direction: column;
+    color: var(--card-text-color-main);
+}
+
+.widget--toc {
+    background-color: var(--card-background);
+    border-radius: var(--card-border-radius);
+    box-shadow: var(--shadow-l1);
+    overflow: hidden;
+}
+
+.article-toc {
+    padding: 0 var(--card-padding);
+    margin-top: var(--spacing-lg);
+
+    @include respond(lg) {
+        display: none;
+    }
+
+    details {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l2);
+
+        &[open] {
+            .article-toc-title {
+                svg {
+                    transform: rotate(90deg);
+                }
+            }
+        }
+
+        summary {
+            list-style: none;
+            padding: var(--spacing-md) var(--spacing-lg);
+            cursor: pointer;
+
+            &::-webkit-details-marker {
+                display: none;
+            }
+
+            .article-toc-title {
+                display: flex;
+                align-items: center;
+                gap: var(--spacing-sm);
+                text-transform: uppercase;
+                font-size: 1.4rem;
+                font-weight: bold;
+                color: var(--card-text-color-tertiary);
+
+                svg {
+                    width: 20px;
+                    height: 20px;
+                    stroke-width: 1.33;
+                    transition: transform 0.3s ease;
+                }
+            }
+        }
+    }
+}
