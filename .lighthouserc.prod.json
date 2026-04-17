@@ -2,10 +2,10 @@
   "ci": {
     "collect": {
       "url": [
-        "http://127.0.0.1:1380/",
-        "http://127.0.0.1:1380/p/testing-podman-2.1.x-rootless-networking/",
-        "http://127.0.0.1:1380/p/testing-and-signing-kernel-for-ubuntu-20.04/",
-        "http://127.0.0.1:1380/p/enable-mozilla-firefox-and-thunderbird-on-wayland-in-ubuntu-20.04/"
+        "https://blog.szypowi.cz/",
+        "https://blog.szypowi.cz/p/testing-podman-2.1.x-rootless-networking/",
+        "https://blog.szypowi.cz/p/testing-and-signing-kernel-for-ubuntu-20.04/",
+        "https://blog.szypowi.cz/p/enable-mozilla-firefox-and-thunderbird-on-wayland-in-ubuntu-20.04/"
       ],
       "numberOfRuns": 3,
       "settings": {

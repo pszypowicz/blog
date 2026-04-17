@@ -1,0 +1,47 @@
+{
+  "ci": {
+    "collect": {
+      "url": [
+        "http://127.0.0.1:1380/",
+        "http://127.0.0.1:1380/p/testing-podman-2.1.x-rootless-networking/",
+        "http://127.0.0.1:1380/p/testing-and-signing-kernel-for-ubuntu-20.04/",
+        "http://127.0.0.1:1380/p/enable-mozilla-firefox-and-thunderbird-on-wayland-in-ubuntu-20.04/"
+      ],
+      "numberOfRuns": 3,
+      "settings": {
+        "preset": "desktop",
+        "onlyCategories": ["performance"],
+        "chromeFlags": "--headless=new --no-sandbox"
+      }
+    },
+    "assert": {
+      "assertions": {
+        "categories:performance":        ["error", { "minScore": 1.0 }],
+        "first-contentful-paint":        ["error", { "maxNumericValue": 600 }],
+        "largest-contentful-paint":      ["error", { "maxNumericValue": 800 }],
+        "speed-index":                   ["error", { "maxNumericValue": 800 }],
+        "total-blocking-time":           ["error", { "maxNumericValue": 50  }],
+        "cumulative-layout-shift":       ["error", { "maxNumericValue": 0.01 }],
+        "interactive":                   ["error", { "maxNumericValue": 800 }],
+        "server-response-time":          ["error", { "maxNumericValue": 200 }],
+        "render-blocking-resources":     ["error", { "maxLength": 0 }],
+        "unused-css-rules":              ["warn",  { "maxLength": 1 }],
+        "unused-javascript":             ["error", { "maxLength": 0 }],
+        "uses-responsive-images":        ["error", { "minScore": 1 }],
+        "modern-image-formats":          ["error", { "minScore": 1 }],
+        "efficient-animated-content":    ["error", { "minScore": 1 }],
+        "duplicated-javascript":         ["error", { "maxLength": 0 }],
+        "legacy-javascript":             ["error", { "maxLength": 0 }],
+        "total-byte-weight":             ["error", { "maxNumericValue": 150000 }],
+        "dom-size":                      ["error", { "maxNumericValue": 500 }],
+        "font-display":                  ["error", { "minScore": 1 }],
+
+        "uses-text-compression":         ["warn",  { "minScore": 1 }],
+        "uses-long-cache-ttl":           ["warn",  { "minScore": 1 }]
+      }
+    },
+    "upload": {
+      "target": "temporary-public-storage"
+    }
+  }
+}

@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
 #
-# lighthouse.sh - run Lighthouse CI against a local Hugo server.
+# lighthouse.sh - run Lighthouse CI against the site.
 #
-# Starts `hugo server`, waits for it to respond, runs `lhci autorun`
-# against URLs listed in .lighthouserc.json, then shuts the server down.
-# Exits non-zero on any Lighthouse assertion failure.
+# Two modes:
+#   scripts/lighthouse.sh          # local: build, serve public/ via python, run lhci
+#   scripts/lighthouse.sh --prod   # prod: run lhci against the deployed URL, no local server
 #
-# Requires: hugo, lhci (`npm i -g @lhci/cli`), Google Chrome in /Applications.
+# Local mode uses .lighthouserc.local.json (server-dependent audits demoted to warn
+# because python's http.server does not compress or send cache headers).
+# Prod mode uses .lighthouserc.prod.json (strict, asserts Brotli and long-cache-ttl).
+#
+# Requires: hugo (local only), lhci (`npm i -g @lhci/cli`), Google Chrome.
 
 set -euo pipefail
 
@@ -17,9 +21,12 @@ HUGO=${HUGO:-hugo}
 LHCI=${LHCI:-lhci}
 PORT=${PORT:-1380}
 
-# Lighthouse needs to measure the real production HTML, not the dev
-# server (which injects livereload.js and skews metrics). We build once
-# and serve public/ with python's http.server.
+MODE=local
+if [[ "${1:-}" == "--prod" ]]; then
+    MODE=prod
+fi
+
+CONFIG=".lighthouserc.${MODE}.json"
 
 require() {
     command -v "$1" >/dev/null 2>&1 || {
@@ -28,12 +35,19 @@ require() {
     }
 }
 
-require "$HUGO"
 require "$LHCI"
 
 if [[ -z "${CHROME_PATH:-}" && -x "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" ]]; then
     export CHROME_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 fi
+
+if [[ "$MODE" == "prod" ]]; then
+    echo "==> Running lhci autorun against production ($CONFIG)"
+    "$LHCI" autorun --config="$CONFIG"
+    exit $?
+fi
+
+require "$HUGO"
 
 cleanup() {
     if [[ -n "${SERVER_PID:-}" ]]; then
@@ -68,5 +82,5 @@ if ! curl -s -o /dev/null "http://127.0.0.1:$PORT/"; then
     exit 2
 fi
 
-echo "==> Running lhci autorun"
-"$LHCI" autorun --config=.lighthouserc.json
+echo "==> Running lhci autorun ($CONFIG)"
+"$LHCI" autorun --config="$CONFIG"
