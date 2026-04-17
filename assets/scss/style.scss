@@ -1,0 +1,34 @@
+/*
+ * Site-level override of hugo-theme-stack's style.scss.
+ *
+ * Rationale: Stack's upstream bundle imports partials for features this
+ * site does not ship (search, cookie banner). Dropping those imports here
+ * - without forking the theme - trims the inlined critical-path CSS by
+ * ~280 lines of SCSS and directly benefits the 14 KB rule in CLAUDE.md.
+ *
+ * Hugo's asset resolver searches site `assets/` before the theme's, so
+ * `resources.Get "scss/style.scss"` picks up this file. Bare `@import`
+ * paths still resolve against the theme dir, so we reuse the upstream
+ * partials as-is.
+ */
+
+@import "breakpoints.scss";
+@import "variables.scss";
+@import "mixins.scss";
+@import "grid.scss";
+
+@import "external/normalize.scss";
+
+@import "partials/menu.scss";
+@import "partials/article.scss";
+@import "partials/widgets.scss";
+@import "partials/footer.scss";
+@import "partials/pagination.scss";
+@import "partials/sidebar.scss";
+@import "partials/base.scss";
+@import "partials/layout/article.scss";
+@import "partials/layout/list.scss";
+@import "partials/layout/404.scss";
+
+@import "general.scss";
+@import "custom.scss";
