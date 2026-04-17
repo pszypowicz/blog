@@ -1,0 +1,54 @@
+name: perf
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: perf-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  budget:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: recursive
+          fetch-depth: 1
+      - uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: '0.160.1'
+          extended: true
+      - name: Install brotli
+        run: sudo apt-get update && sudo apt-get install -y brotli
+      - name: Enforce performance budgets
+        run: scripts/budget.sh
+
+  lighthouse:
+    runs-on: ubuntu-latest
+    needs: budget
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: recursive
+          fetch-depth: 1
+      - uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: '0.160.1'
+          extended: true
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Install lhci + lighthouse
+        run: npm install -g @lhci/cli lighthouse
+      - name: Install brotli
+        run: sudo apt-get update && sudo apt-get install -y brotli
+      - name: Run Lighthouse CI (local config)
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+        run: scripts/lighthouse.sh
