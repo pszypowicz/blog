@@ -45,3 +45,28 @@
     font-family: var(--mono-stack);
     font-feature-settings: "calt" 1, "liga" 1;
 }
+
+/*
+ * Zero-JS mobile menu.
+ *
+ * Stack's hamburger is wired to menu.ts which we do not ship. With no
+ * JS the button is dead weight on mobile. Hide it and render the
+ * sidebar menu inline instead - on mobile the sidebar already stacks
+ * above main, so the (short) menu list sits naturally under the site
+ * header with no interaction required. md+ layout uses the default
+ * inline menu and is untouched.
+ */
+@media (max-width: 767.98px) {
+    #toggle-menu.hamburger {
+        display: none;
+    }
+
+    #main-menu {
+        display: flex;
+        background-color: transparent;
+        box-shadow: none;
+        margin: 0;
+        padding: 0;
+        gap: var(--spacing-md);
+    }
+}
