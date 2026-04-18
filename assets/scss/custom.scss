@@ -66,7 +66,21 @@
 }
 
 main.main {
-    max-width: 72ch;
+    max-width: 80ch;
+}
+
+/*
+ * Collapse the menu to its natural height at tablet+ so widgets dock
+ * directly under the menu. Upstream Stack sets `#main-menu { flex-grow: 1 }`
+ * to push the (normally present) language / dark-mode toggle to the
+ * bottom of the sidebar. With those controls removed, flex-grow just
+ * creates a large empty gap between "About" and the Categories/Tags
+ * widgets below.
+ */
+@media (min-width: 768px) {
+    #main-menu {
+        flex-grow: 0;
+    }
 }
 
 .sidebar-widgets {

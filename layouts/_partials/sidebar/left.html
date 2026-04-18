@@ -62,6 +62,14 @@
             </a>
         </li>
         {{ end }}
+        {{/*
+            Stack's menu-bottom-section hosts the i18n switcher and the
+            colorScheme toggle. Neither applies here (single-language site,
+            colorScheme.toggle = false), so skip the wrapper li entirely
+            to avoid the `margin-top: auto` pushing an empty element to
+            the bottom of the flex menu and creating a vertical gap.
+        */}}
+        {{ if or hugo.IsMultilingual .Site.Params.colorScheme.toggle }}
         <li class="menu-bottom-section">
             <ol class="menu">
                 {{- $currentLanguageCode := .Language.Lang -}}
@@ -91,6 +99,7 @@
                 {{ end }}
             </ol>
         </li>
+        {{ end }}
     </ol>
 
     {{/*
