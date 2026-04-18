@@ -8,9 +8,13 @@ categories  = ["linux"]
 
 A quick note on podman 2.1.x rootless networking.
 
+## What changed
+
 Until 2.1.0, to let two containers talk to each other directly, you had to put them in the same pod. From 2.1.0 onward you can create a network and attach containers to it, and each gets its own IP address on that network.
 
-To test it: run an httpd container, then curl it from another container on the same network.
+## The test
+
+Run an httpd container, then curl it from another container on the same network.
 
 ```bash
 $ podman network create cni-podman0
