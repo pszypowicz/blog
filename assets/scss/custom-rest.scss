@@ -111,18 +111,3 @@ pre.chroma,
         background-attachment: local, local, scroll, scroll;
     }
 }
-
-/*
- * Reclaim the right-side whitespace at tablet width.
- *
- * Stack's `.container.extended` puts the left sidebar at 25% of a
- * 1024px max-width container at md (768-1023px), and the right
- * widget sidebar only renders at lg (>=1024px). At tablet the
- * result is a visibly narrow main column with empty space to the
- * right of it. Shrink the left sidebar share so main grows to fill.
- */
-@media (min-width: 768px) and (max-width: 1023px) {
-    .container.extended {
-        --left-sidebar-max-width: 18%;
-    }
-}
