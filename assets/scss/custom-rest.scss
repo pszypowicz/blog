@@ -50,11 +50,6 @@
     line-gap-override: 0%;
 }
 
-.article-list--compact .article-title {
-    font-family: var(--mono-stack);
-    font-feature-settings: "calt" 1, "liga" 1;
-}
-
 .article-content {
     h1, h2, h3, h4, h5, h6 {
         font-family: var(--mono-stack);
@@ -108,11 +103,26 @@ pre.chroma,
         background-image:
             linear-gradient(to right, var(--pre-background-color) 30%, rgba(0, 0, 0, 0)),
             linear-gradient(to left, var(--pre-background-color) 30%, rgba(0, 0, 0, 0)),
-            radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0)),
-            radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0));
+            radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, 0.30), rgba(0, 0, 0, 0)),
+            radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, 0.30), rgba(0, 0, 0, 0));
         background-position: 0 0, 100% 0, 0 0, 100% 0;
         background-repeat: no-repeat;
-        background-size: 40px 100%, 40px 100%, 14px 100%, 14px 100%;
+        background-size: 40px 100%, 40px 100%, 18px 100%, 18px 100%;
         background-attachment: local, local, scroll, scroll;
+    }
+}
+
+/*
+ * Reclaim the right-side whitespace at tablet width.
+ *
+ * Stack's `.container.extended` puts the left sidebar at 25% of a
+ * 1024px max-width container at md (768-1023px), and the right
+ * widget sidebar only renders at lg (>=1024px). At tablet the
+ * result is a visibly narrow main column with empty space to the
+ * right of it. Shrink the left sidebar share so main grows to fill.
+ */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .container.extended {
+        --left-sidebar-max-width: 18%;
     }
 }
