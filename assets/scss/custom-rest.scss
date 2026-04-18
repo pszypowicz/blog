@@ -75,3 +75,44 @@ pre.chroma,
     font-feature-settings: "calt" 1, "liga" 1;
     font-variant-ligatures: contextual;
 }
+
+/*
+ * Code block horizontal overflow affordance.
+ *
+ * Long command lines in `<pre>` overflow the gutter on narrow viewports.
+ * The theme sets overflow-x: auto, so horizontal scroll works, but macOS
+ * and iOS auto-hide scrollbars, leaving readers without any visual cue
+ * that content continues beyond the visible edge.
+ *
+ * Force a thin, always-visible scrollbar track, and paint edge fades that
+ * scroll with the content (`background-attachment: local`) so each side
+ * fades only while there is off-screen content in that direction.
+ */
+.article-content {
+    pre,
+    .highlight {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(127, 127, 127, 0.45) transparent;
+
+        &::-webkit-scrollbar {
+            height: 6px;
+        }
+        &::-webkit-scrollbar-thumb {
+            background: rgba(127, 127, 127, 0.45);
+            border-radius: 3px;
+        }
+        &::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        background-image:
+            linear-gradient(to right, var(--pre-background-color) 30%, rgba(0, 0, 0, 0)),
+            linear-gradient(to left, var(--pre-background-color) 30%, rgba(0, 0, 0, 0)),
+            radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0)),
+            radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0));
+        background-position: 0 0, 100% 0, 0 0, 100% 0;
+        background-repeat: no-repeat;
+        background-size: 40px 100%, 40px 100%, 14px 100%, 14px 100%;
+        background-attachment: local, local, scroll, scroll;
+    }
+}
