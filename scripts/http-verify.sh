@@ -35,11 +35,12 @@ FAILS=0
 echo "==> Verifying $URL"
 
 # --- TLS 1.3 ---
-tls_ver=$("$CURL" -sI -o /dev/null -w '%{ssl_version}\n' "$URL")
+# %{ssl_version} is missing from some curl bottles; parse -sv stderr instead.
+tls_ver=$("$CURL" -sv -o /dev/null "$URL" 2>&1 | awk -F'[ /]' '/^\* SSL connection using/ {print $5; exit}')
 if [[ "$tls_ver" == "TLSv1.3" ]]; then
     pass "TLS negotiated: $tls_ver"
 else
-    fail "TLS negotiated: $tls_ver (want TLSv1.3)"
+    fail "TLS negotiated: ${tls_ver:-unknown} (want TLSv1.3)"
 fi
 
 # --- HTTP/2 baseline ---
