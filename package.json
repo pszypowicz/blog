@@ -1,0 +1,24 @@
+{
+  "name": "blog",
+  "version": "1.0.0",
+  "description": "This is the source code of blog.szypowi.cz",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pszypowicz/blog.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/pszypowicz/blog/issues"
+  },
+  "homepage": "https://github.com/pszypowicz/blog#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.59.1"
+  }
+}

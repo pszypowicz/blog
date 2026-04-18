@@ -9,6 +9,10 @@ node_modules/
 *.log
 npm-debug.log*
 
+# Playwright runtime output (per-test folders, separate from checked-in baselines)
+/test-results/
+/playwright-report/
+
 # Editor / OS
 .DS_Store
 .vscode/
