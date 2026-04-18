@@ -47,14 +47,48 @@
 }
 
 /*
- * Zero-JS mobile menu.
+ * Single-left-column layout.
  *
- * Stack's hamburger is wired to menu.ts which we do not ship. With no
- * JS the button is dead weight on mobile. Hide it and render the
- * sidebar menu inline instead - on mobile the sidebar already stacks
- * above main, so the (short) menu list sits naturally under the site
- * header with no interaction required. md+ layout uses the default
- * inline menu and is untouched.
+ * The site consolidates Stack's default left-nav + main + right-widgets
+ * pattern into a single left sidebar that carries header, menu, and
+ * contextual widgets (categories/tags on listing pages, TOC on posts).
+ * See layouts/_partials/sidebar/left.html for the widget emission and
+ * layouts/_partials/sidebar/right.html for the empty override.
+ *
+ * - Right sidebar is hidden as a safety net in case any template still
+ *   renders the aside.
+ * - Main column caps at 72ch for comfortable prose reading; extra
+ *   horizontal space falls to the right as page margin on wide displays.
+ * - Sidebar widgets render stacked below the menu with breathing room.
+ */
+.right-sidebar {
+    display: none;
+}
+
+main.main {
+    max-width: 72ch;
+}
+
+.sidebar-widgets {
+    display: flex;
+    flex-direction: column;
+    gap: var(--section-separation);
+    margin-top: var(--section-separation);
+}
+
+/*
+ * Mobile overrides.
+ *
+ * - Zero-JS menu: Stack's hamburger is wired to menu.ts which we do not
+ *   ship. The button is dead weight, so hide it and render the sidebar
+ *   menu inline instead. On mobile the sidebar already stacks above main,
+ *   so the menu sits naturally under the site header with no interaction
+ *   needed. md+ layout uses the default inline menu and is untouched.
+ * - Widgets are hidden so phone readers land directly on post content;
+ *   categories/tags/TOC reappear at tablet+ where the sidebar has room.
+ *
+ * Kept at the end of the file so these overrides win against the
+ * general rules above on mobile viewports.
  */
 @media (max-width: 767.98px) {
     #toggle-menu.hamburger {
@@ -68,5 +102,9 @@
         margin: 0;
         padding: 0;
         gap: var(--spacing-md);
+    }
+
+    .sidebar-widgets {
+        display: none;
     }
 }
