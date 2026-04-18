@@ -77,6 +77,18 @@ main.main {
 }
 
 /*
+ * Hide the in-article TOC toggle at tablet+ (768px+). Upstream Stack only
+ * hides it at lg (1024px+) on the assumption that the sidebar TOC widget
+ * renders at lg; we render the widget at md+, so the inline toggle would
+ * duplicate it at tablet without this override.
+ */
+@media (min-width: 768px) {
+    .article-toc {
+        display: none;
+    }
+}
+
+/*
  * Mobile overrides.
  *
  * - Zero-JS menu: Stack's hamburger is wired to menu.ts which we do not
