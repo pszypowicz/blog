@@ -25,12 +25,13 @@ jobs:
           fetch-depth: 1
       - name: Install Hugo extended
         run: |
-          curl -fsSL "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.tar.gz" -o hugo.tar.gz
+          TARBALL="hugo_extended_${HUGO_VERSION}_linux-amd64.tar.gz"
+          curl -fsSL "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/${TARBALL}" -o "${TARBALL}"
           curl -fsSL "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_${HUGO_VERSION}_checksums.txt" -o hugo_checksums.txt
-          grep "hugo_extended_${HUGO_VERSION}_linux-amd64.tar.gz" hugo_checksums.txt | sha256sum -c -
-          tar xzf hugo.tar.gz hugo
+          grep "${TARBALL}" hugo_checksums.txt | sha256sum -c -
+          tar xzf "${TARBALL}" hugo
           sudo mv hugo /usr/local/bin/hugo
-          rm hugo.tar.gz hugo_checksums.txt
+          rm "${TARBALL}" hugo_checksums.txt
           hugo version
       - name: Install brotli
         run: sudo apt-get update && sudo apt-get install -y brotli
@@ -47,12 +48,13 @@ jobs:
           fetch-depth: 1
       - name: Install Hugo extended
         run: |
-          curl -fsSL "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.tar.gz" -o hugo.tar.gz
+          TARBALL="hugo_extended_${HUGO_VERSION}_linux-amd64.tar.gz"
+          curl -fsSL "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/${TARBALL}" -o "${TARBALL}"
           curl -fsSL "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_${HUGO_VERSION}_checksums.txt" -o hugo_checksums.txt
-          grep "hugo_extended_${HUGO_VERSION}_linux-amd64.tar.gz" hugo_checksums.txt | sha256sum -c -
-          tar xzf hugo.tar.gz hugo
+          grep "${TARBALL}" hugo_checksums.txt | sha256sum -c -
+          tar xzf "${TARBALL}" hugo
           sudo mv hugo /usr/local/bin/hugo
-          rm hugo.tar.gz hugo_checksums.txt
+          rm "${TARBALL}" hugo_checksums.txt
           hugo version
       - uses: actions/setup-node@v5
         with:
