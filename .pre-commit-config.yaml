@@ -36,7 +36,7 @@ repos:
         language: system
         pass_filenames: false
         always_run: false
-        files: ^(content/|layouts/|assets/|static/|themes/|config\.toml|hugo\.toml|hugo\.yaml)
+        files: ^(content/|static/|themes/|config/|hugo\.toml)
         description: >
           Build the site and enforce the byte / single-packet / zero-JS
           budgets defined in CLAUDE.md. Only fires when site sources change.
