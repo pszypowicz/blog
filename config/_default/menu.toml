@@ -11,3 +11,10 @@
     url        = "https://pl.linkedin.com/in/przemyslaw-szypowicz"
     [social.params]
         icon = "brand-linkedin"
+
+[[social]]
+    identifier = "rss"
+    name       = "RSS"
+    url        = "/index.xml"
+    [social.params]
+        icon = "rss"
