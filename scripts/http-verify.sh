@@ -85,17 +85,30 @@ else
     fail "No hashed asset found in homepage HTML (looked for .css / .js / .woff2)"
 fi
 
-# --- HTML revalidation (304 on If-None-Match) ---
-etag=$("$CURL" -sI "$URL" | awk '/^etag:/I {print $2}' | tr -d '\r\n"' || true)
+# --- HTML revalidation (304 on If-None-Match or If-Modified-Since) ---
+# CF Pages emits Last-Modified rather than ETag on cached HTML; browsers try
+# both header families, so the script does too.
+headers=$("$CURL" -sI "$URL")
+etag=$(echo "$headers" | awk -F': ' 'tolower($1)=="etag"{sub(/\r$/,"",$2); print $2; exit}' | tr -d '"')
+lm=$(echo "$headers" | awk -F': ' 'tolower($1)=="last-modified"{sub(/\r$/,"",$2); print $2; exit}')
+
 if [[ -n "$etag" ]]; then
     status=$("$CURL" -s -o /dev/null -w '%{http_code}' -H "If-None-Match: \"$etag\"" "$URL")
-    if [[ "$status" == "304" ]]; then
-        pass "Conditional GET returns 304 on unchanged ETag"
-    else
-        fail "Conditional GET returned $status, expected 304"
-    fi
+    label="ETag"
+elif [[ -n "$lm" ]]; then
+    status=$("$CURL" -s -o /dev/null -w '%{http_code}' -H "If-Modified-Since: $lm" "$URL")
+    label="Last-Modified"
 else
-    fail "No ETag header on HTML response"
+    status=""
+    label="none"
+fi
+
+if [[ "$status" == "304" ]]; then
+    pass "Conditional GET returns 304 ($label)"
+elif [[ -z "$status" ]]; then
+    fail "No ETag or Last-Modified header on HTML response"
+else
+    fail "Conditional GET returned $status, expected 304 (tried $label)"
 fi
 
 printf '\n'

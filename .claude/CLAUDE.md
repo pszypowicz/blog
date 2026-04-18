@@ -146,7 +146,7 @@ The site must score Lighthouse 100 **with fonts disabled in the network panel**.
 
 - Hashed, content-addressable filenames for every asset (`style.<sha256>.css`, `cascadia-code.<sha256>.woff2`). Hugo's `resources.Fingerprint` handles this.
 - `Cache-Control: public, max-age=31536000, immutable` on all hashed assets (1 year, never revalidated).
-- `Cache-Control: public, s-maxage=300, stale-while-revalidate=60` on HTML. CF edge caches HTML for 5 minutes and serves ETag, so browser revalidation returns `304 Not Modified` - typically 0 bytes over the wire after the first visit. `stale-while-revalidate` lets the edge refresh in the background so deploys propagate within one client request after the TTL lapses.
+- `Cache-Control: public, s-maxage=300, stale-while-revalidate=60` on HTML, paired with a zone-level **Cache Rule** (`blog html edge cache`) that marks HTML paths on `blog.szypowi.cz` as eligible for edge caching with "use cache-control header from origin". Without the Cache Rule, CF's default cache level skips HTML regardless of the directive. With both in place, CF edge caches HTML for 5 minutes and emits `Last-Modified`, so browser revalidation via `If-Modified-Since` returns `304 Not Modified` - typically 0 bytes over the wire after the first visit. `stale-while-revalidate` lets the edge refresh in the background so deploys propagate within one client request after the TTL lapses.
 - `_headers` file in the repo root configured for Cloudflare Pages.
 
 ## DNS, TLS, and transport
