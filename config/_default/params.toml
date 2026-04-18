@@ -1,50 +1,20 @@
-mainSections        = ["post"]
-featuredImageField  = "image"
-rssFullContent      = true
-favicon             = ""
+mainSections       = ["post"]
+description        = "Hitchhiking through raw bits"
 
-[footer]
-    since      = 2020
-    customText = ""
-
-[dateFormat]
-    published = "2006-01-02"
-    lastUpdated = "2006-01-02 15:04 MST"
-
-[article]
-    math     = false
-    toc      = false
-    readingTime = true
-    [article.license]
-        enabled = false
-        default = ""
-
-[comments]
-    enabled  = false
-    provider = ""
+[sidebar]
+    subtitle = "Hitchhiking through raw bits"
 
 [widgets]
     homepage = [
-        { type = "search" },
-        { type = "archives", params = { limit = 5 } },
-        { type = "categories", params = { limit = 10 } },
-        { type = "tag-cloud",  params = { limit = 10 } },
+        { type = "about" },
+        { type = "categories" },
+        { type = "tags" },
     ]
     page = [
+        { type = "about" },
         { type = "toc" },
     ]
 
-[opengraph]
-    [opengraph.twitter]
-        site = ""
-        card = "summary"
-
-[colorScheme]
-    toggle  = false
-    default = "auto"
-
-[imageProcessing]
-    [imageProcessing.cover]
-        enabled = false
-    [imageProcessing.content]
-        enabled = false
+    [widgets.about]
+        title       = "about"
+        description = "Engineering notes from Przemek. Focused on performance, the command line, and how the web actually moves bytes."
