@@ -19,13 +19,6 @@ buildExpired    = false
     post = "/p/:slug/"
     page = "/:slug/"
 
-[minify]
-    disableXML   = false
-    minifyOutput = true
-    [minify.tdewolff]
-        [minify.tdewolff.html]
-            keepWhitespace = false
-
 [related]
     includeNewer = true
     threshold    = 60
