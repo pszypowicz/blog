@@ -9,3 +9,10 @@
     url        = "https://github.com/pszypowicz"
     [social.params]
         icon = "brand-github"
+
+[[social]]
+    identifier = "linkedin"
+    name       = "LinkedIn"
+    url        = "https://pl.linkedin.com/in/przemyslaw-szypowicz"
+    [social.params]
+        icon = "brand-linkedin"
