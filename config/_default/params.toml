@@ -7,8 +7,8 @@ description        = "Hitchhiking through raw bits"
 [widgets]
     homepage = [
         { type = "about" },
-        { type = "categories" },
-        { type = "tags" },
+        { type = "categories", position = "bot" },
+        { type = "tags", position = "bot" },
     ]
     page = [
         { type = "about" },
