@@ -44,41 +44,18 @@ Enforced by `scripts/lighthouse.sh` via `lhci`. Each audited page must meet:
 
 If a change drops any score, either the change is reverted or the charter is amended **before** merging - never after.
 
-## Hosting: Cloudflare Pages
-
-Not GitHub Pages. Rationale, backed by measurements in this repo's `scripts/`:
-
-| Capability                           | GitHub Pages       | Cloudflare Pages      |
-| ------------------------------------ | ------------------ | --------------------- |
-| HTTP/2                               | Yes                | Yes                   |
-| HTTP/3 + QUIC                        | **No**             | Yes                   |
-| TLS 1.3                              | Yes                | Yes                   |
-| 0-RTT TLS resumption                 | No                 | Yes                   |
-| Brotli compression                   | **No (gzip only)** | Yes                   |
-| Zstd compression                     | No                 | Yes (where supported) |
-| 103 Early Hints                      | No                 | Yes (via `_headers`)  |
-| Encrypted Client Hello (ECH)         | No                 | Yes                   |
-| HTTPS/SVCB DNS records               | No (not served)    | Yes (auto)            |
-| Build from GitHub repo               | Yes                | Yes                   |
-| Cost                                 | Free               | Free                  |
-| DNS already terminated on Cloudflare | n/a                | Yes                   |
-
-GitHub Pages' lack of Brotli alone forfeits ~15-25% on every byte. Combined with no HTTP/3, no Early Hints, no 0-RTT, and no ECH, the gap is not closeable. The DNS for `szypowi.cz` is already authoritative on Cloudflare nameservers - moving to Cloudflare Pages removes one entire DNS hop and unifies the control plane.
-
-The repo still lives on GitHub. Cloudflare Pages builds directly from the GitHub integration. The source of truth is unchanged.
-
 ## Build stack
 
 - **Hugo extended** (0.160+ for the asset pipeline: `resources.PostCSS`, `resources.Minify`, `resources.Fingerprint`, `resources.ExecuteAsTemplate`).
-- **Theme: hugo-theme-stack** as a git submodule, overridden entirely via `assets/scss/custom.scss` and `layouts/partials/*.html` at the site level. The theme upstream is never forked, only overridden.
+- **Theme: `hugo-theme-pager`** (personal theme, owned by me) as a git submodule at `themes/pager`. CSS and layout live inside the theme - there is no site-level override. The theme is versioned independently (see `Bump theme to vX.Y.Z` commits) and pinned per blog commit.
 - **Hugo flags on every build**: `hugo --minify --gc`. No exceptions.
 - **PostCSS + cssnano** for additional CSS minification beyond Hugo's built-in minifier.
 - **Brotli-q11** precompression of every static asset in CI, shipped alongside the raw files. Cloudflare Pages serves the precompressed files when the client's `Accept-Encoding` header permits it.
 
 ## CSS strategy
 
-1. **Inline critical CSS in `<head>`**. `assets/scss/critical.scss` pulls only above-fold partials (reset, grid, menu, sidebar, article cards, layout/article, Cascadia fonts) and is compiled + fingerprinted + inlined as `<style>` by `layouts/_partials/head/style.html`.
-2. **Defer non-critical CSS** (`assets/scss/rest.scss`) as a hashed external stylesheet via the standard trick:
+1. **Inline critical CSS in `<head>`**. `themes/pager/assets/scss/critical.scss` pulls only above-fold partials (reset, grid, menu, sidebar, article cards, layout/article, Cascadia fonts) and is compiled + fingerprinted + inlined as `<style>` by `themes/pager/layouts/_partials/head/style.html`.
+2. **Defer non-critical CSS** (`themes/pager/assets/scss/rest.scss`) as a hashed external stylesheet via the standard trick:
    ```html
    <link
      rel="preload"
@@ -92,8 +69,8 @@ The repo still lives on GitHub. Cloudflare Pages builds directly from the GitHub
    ```
    Contents: footer, pagination, widgets, listing-page layout, 404 page, and the ~860-line chroma syntax-highlight block. `_headers` sets `Cache-Control: public, max-age=31536000, immutable` on `/*.css` so returning visitors hit the browser cache on every page after the first.
 3. **No `@import` in CSS**. Concatenate at build time.
-4. **Purge unused rules** against the actual rendered HTML. Today this is done by overriding `assets/scss/critical.scss` and `assets/scss/variables.scss` at the site level so upstream Stack imports we do not use (search, cookie banner, chroma on first paint) never enter the compiled output. Revisit PurgeCSS if more aggressive trimming is needed.
-5. **Scoped styles** only where actually needed. Stack ships a lot of SCSS we do not use - strip it.
+4. **Purge unused rules** against the actual rendered HTML. Today this is done at source inside `themes/pager/assets/scss/` - `critical.scss` imports only the partials needed for first paint, and `tokens.scss` holds the design tokens. Nothing is pulled in just to be stripped later. Revisit PurgeCSS if more aggressive trimming is needed.
+5. **Scoped styles** only where actually needed.
 
 ## JavaScript strategy
 
@@ -105,7 +82,7 @@ If an interaction genuinely demands JS (search, theme toggle, copy-code buttons)
 - Loaded on `pointerenter` / `pointerdown` / `input focus`, never on `DOMContentLoaded`.
 - Budget: <= 10 KB gzipped across all deferred scripts combined.
 
-Stack's default bundle (pswp gallery, mermaid, search index, smooth scroll, copy buttons) is disabled. Features we re-add must justify their bytes against a user benefit, not against "it's nice to have."
+The theme ships no JS by default. Any feature that would need JS (search, theme toggle, copy-code buttons) must justify its bytes against a user benefit, not against "it's nice to have."
 
 ## Font strategy (the bells and whistles)
 
@@ -166,13 +143,20 @@ Every change goes through the test suite in `scripts/`. A PR that does not run c
 - `scripts/budget.sh` - enforce the byte budgets table above. One exit code per budget. CI-friendly.
 - `scripts/lighthouse.sh` - spin up a local Hugo server, run Lighthouse via `lhci`, assert the Core Web Vitals thresholds above. Uses `.lighthouserc.local.json` locally and `.lighthouserc.prod.json` when invoked with `--prod`. The two configs differ only on server-dependent audits (`uses-text-compression`, `uses-long-cache-ttl`): strict in prod, `warn` locally because `python3 -m http.server` sends neither Brotli nor cache headers.
 - `scripts/http-verify.sh` - against the deployed URL, verify: TLS 1.3 is negotiated, HTTP/3 is advertised, Brotli is served, immutable cache headers are present on hashed assets, ETag revalidation returns 304 on HTML.
+- `playwright.config.ts` + `tests/visual/` - visual regression harness. Runs each page against a 3-browser (Chromium, Firefox, WebKit) x 3-viewport (375, 768, 1440) matrix with `maxDiffPixelRatio: 0.001`. Fonts are disabled so snapshots capture the system-stack first paint the charter promises; Cascadia swap is a separate state.
+- `.pre-commit-config.yaml` - local enforcement. Runs `scripts/budget.sh` as a `perf-budget` hook whenever `content/`, `static/`, `themes/`, `config/`, or `hugo.toml` changes. Also standard hygiene hooks (trailing whitespace, EOF fixer, YAML/JSON/TOML linting, shellcheck, 200 KB large-file guard with `tests/visual/**-snapshots/*.png` excluded). Install once with `pre-commit install`.
 
 Tooling required (install once):
 
 ```
-brew install nghttp2 brotli hyperfine curl
+brew install nghttp2 brotli hyperfine curl pre-commit
 npm install -g lighthouse @lhci/cli
+npm install   # installs local devDependencies from package.json (Playwright today)
+npx playwright install
+pre-commit install
 ```
+
+Lighthouse CLI is installed globally. Playwright is the only npm-local dep (pinned in `package.json`). PostCSS/cssnano minification runs through Hugo's built-in pipeline, not a standalone npm install.
 
 The homebrew `curl` formula ships with HTTP/3 (ngtcp2 + nghttp3) enabled; use `/opt/homebrew/opt/curl/bin/curl --http3` for HTTP/3 probes since macOS's system curl does not support it.
 
