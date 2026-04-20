@@ -11,6 +11,10 @@ To contact me:
 - [GitHub](https://github.com/pszypowicz)
 - [LinkedIn](https://pl.linkedin.com/in/przemyslaw-szypowicz)
 
+## On AI-assisted posts
+
+Some posts here are drafted by AI from my own notes, then edited and curated before publishing. Those posts are marked `ai-assisted` in their header.
+
 ## Disclaimer
 
 All opinions on this site are my own. Any similarity with real people, situations, or companies is incidental. The content here does not represent the views or policies of my employers or clients.
