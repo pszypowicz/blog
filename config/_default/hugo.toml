@@ -29,3 +29,9 @@ buildExpired    = false
     [[related.indices]]
         name   = "categories"
         weight = 200
+
+# Allow the modeline to read the build commit SHA. Cloudflare Pages auto-sets
+# CF_PAGES_COMMIT_SHA; COMMIT_SHA lets local builds opt in via env var.
+[security]
+    [security.funcs]
+        getenv = ['^HUGO_', '^CI$', '^CF_PAGES_', '^COMMIT_SHA$']

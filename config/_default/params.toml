@@ -1,5 +1,6 @@
 mainSections       = ["post"]
 description        = "Hitchhiking through raw bits"
+repoURL            = "https://github.com/pszypowicz/blog"
 
 [sidebar]
     subtitle = "Hitchhiking through raw bits"
