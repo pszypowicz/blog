@@ -1,0 +1,25 @@
+name: Install Hugo extended
+description: Download, SHA-256 verify, and install Hugo extended on Linux runners.
+
+inputs:
+  version:
+    description: Hugo version without leading v (e.g. 0.160.1).
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Download and verify Hugo extended
+      shell: bash
+      env:
+        HUGO_VERSION: ${{ inputs.version }}
+      run: |
+        set -euo pipefail
+        TARBALL="hugo_extended_${HUGO_VERSION}_linux-amd64.tar.gz"
+        curl -fsSL "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/${TARBALL}" -o "${TARBALL}"
+        curl -fsSL "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_${HUGO_VERSION}_checksums.txt" -o hugo_checksums.txt
+        grep "${TARBALL}" hugo_checksums.txt | sha256sum -c -
+        tar xzf "${TARBALL}" hugo
+        sudo mv hugo /usr/local/bin/hugo
+        rm "${TARBALL}" hugo_checksums.txt
+        hugo version
