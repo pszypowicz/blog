@@ -176,3 +176,12 @@ if [[ $QUIET -eq 1 ]]; then
     printf '{"html_files":%d,"worst_page":"%s","worst_total_br":%d,"max_html_br":%d,"public_bytes":%s,"css_bytes":%s,"js_bytes":%s,"font_bytes":%s,"img_bytes":%s,"single_packet_budget":%d,"initcwnd":%d}\n' \
         "$HTML_COUNT" "$worst_page" "$max_total" "$max_html" "$TOTAL_PUBLIC" "$css_total" "$js_total" "$font_total" "$img_total" "$BUDGET_SINGLE_PACKET_BR" "$INITCWND_BYTES"
 fi
+
+# docs/PERFORMANCE.md: "No @font-face, no <link rel=preload as=font>, no
+# woff2 shipped." Any font bytes in the build output are a charter
+# violation.
+if (( font_total > 0 )); then
+    log "ERROR: $font_total B of web font files found in build output"
+    log "       docs/PERFORMANCE.md forbids web fonts (system stack only)"
+    exit 1
+fi

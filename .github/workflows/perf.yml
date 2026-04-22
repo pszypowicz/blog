@@ -19,7 +19,7 @@ jobs:
   budget:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd  # v5.0.1
         with:
           submodules: recursive
           fetch-depth: 1
@@ -37,12 +37,34 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y brotli
       - name: Enforce performance budgets
         run: scripts/budget.sh
+      - name: Single-flight bench
+        run: scripts/bench.sh
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd  # v5.0.1
+        with:
+          submodules: recursive
+          fetch-depth: 1
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444  # v5.0.0
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install npm devDependencies
+        # --ignore-scripts blocks postinstall hooks so a malicious
+        # package-lock.json change cannot execute code during install.
+        run: npm ci --include=dev --ignore-scripts
+      - name: ESLint
+        run: npm run lint
+      - name: TypeScript check
+        run: npm run typecheck
 
   lighthouse:
     runs-on: ubuntu-latest
     needs: budget
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd  # v5.0.1
         with:
           submodules: recursive
           fetch-depth: 1
@@ -56,7 +78,7 @@ jobs:
           sudo mv hugo /usr/local/bin/hugo
           rm "${TARBALL}" hugo_checksums.txt
           hugo version
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444  # v5.0.0
         with:
           node-version: '22'
       - name: Install lhci + lighthouse
