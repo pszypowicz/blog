@@ -72,6 +72,16 @@ If a change drops any score, either the change is reverted or the charter is ame
 4. **Purge unused rules** against the actual rendered HTML. Today this is done at source inside `themes/pager/assets/scss/` - `critical.scss` imports only the partials needed for first paint, and `tokens.scss` holds the design tokens. Nothing is pulled in just to be stripped later.
 5. **Scoped styles** only where actually needed.
 
+### Long content and the min-content gotcha
+
+A grid item that contains non-wrapping content - a long `<pre>` line, a wide table, a long unbroken URL - reports a min-content at least as wide as its widest child. WebKit's grid algorithm can then inflate a fixed track past its declared size to fit that min-content, which on iPad Safari manifests as the main column shifting right between navigations (the exact bug that generated three v0.1.x releases chasing the wrong cause). The fix is layered across three properties that together break the min-content propagation chain:
+
+1. **`grid-template-columns: var(--col-aside) minmax(0, 1fr)`** on `.page`. `minmax(0, 1fr)` explicitly caps the main track's minimum at zero; no descendant can argue for a larger track.
+2. **`overflow-x: hidden`** on `.main`. Tells WebKit "I handle internal overflow myself, do not widen me to fit a descendant." Inner `<pre>` blocks keep their own `overflow-x: auto`, so long code still scrolls inside the `<pre>` - the outer hidden just stops the inflation from leaking upward.
+3. **`min-width: 0`** on `pre` / `.highlight`. Prevents the code block itself from contributing its widest-line min-content to ancestor sizing. Redundant with (2) in practice, defensive against future refactors that might remove the `.main` overflow.
+
+All three are load-bearing. Removing any one reintroduces the regression on iPad Safari, specifically after the second visit when content is already cached. See the comments in `themes/pager/assets/scss/_layout.scss` and `_code.scss` for the inline rationale.
+
 ## JavaScript strategy
 
 **Zero JS on first paint.** No frameworks, no jQuery, no analytics pixel. The site is HTML and CSS.
