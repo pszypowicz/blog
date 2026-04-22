@@ -63,3 +63,10 @@ gh pr merge --squash --delete-branch
 Production (`main` on Cloudflare Pages) rebuilds automatically from the merged commit.
 
 Theme changes (`themes/pager/`) follow the same pattern in the [`hugo-theme-pager`](https://github.com/pszypowicz/hugo-theme-pager) repo; merge theme PRs first, then bump the submodule pointer here via a blog PR.
+
+## License
+
+Split license:
+
+- **Code** (Hugo config, templates, scripts, CI, tooling) - [MIT](./LICENSE).
+- **Content** (posts under `content/`, images under `images/`) - [CC BY 4.0](./LICENSE-CONTENT).
