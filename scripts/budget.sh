@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# budget.sh - enforce the performance budgets defined in CLAUDE.md.
+# budget.sh - enforce the performance budgets defined in docs/PERFORMANCE.md.
 #
 # Builds the site fresh, measures brotli-q11 sizes for every page, and
 # fails loudly on any violation. Intended for pre-commit and CI.
@@ -10,7 +10,8 @@
 #   1  one or more budgets exceeded (violation)
 #   2  environment / build error (hugo missing, build failed, etc.)
 #
-# Budgets are single source of truth; CLAUDE.md describes their rationale.
+# Budgets are single source of truth; docs/PERFORMANCE.md describes their
+# rationale.
 
 set -euo pipefail
 
@@ -20,11 +21,11 @@ cd "$REPO_ROOT"
 HUGO=${HUGO:-hugo}
 BROTLI=${BROTLI:-brotli}
 
-# ---- budget constants (keep in sync with CLAUDE.md) --------------------------
+# ---- budget constants (keep in sync with docs/PERFORMANCE.md) ----------------
 # HTML and CSS are measured together because critical CSS is inlined into
 # <head>, so the two are part of the same first-flight payload.
 BUDGET_SINGLE_PACKET_BR=14000       # HTML + render-blocking CSS, brotli-q11 (14 KB rule)
-BUDGET_HOME_HTML_BR=6100            # homepage HTML+inline-CSS brotli (CLAUDE.md target 6,000 B; 100 B headroom for minor content churn)
+BUDGET_HOME_HTML_BR=6100            # homepage HTML+inline-CSS brotli (PERFORMANCE.md target 6,000 B; 100 B headroom for minor content churn)
 BUDGET_POST_HTML_BR=10000           # any post (/p/... or /post/...) HTML+inline-CSS brotli
 BUDGET_JS_FIRST_PAINT=0             # render-blocking <script> bytes on first paint
 INITCWND_BYTES=14600
@@ -198,6 +199,21 @@ while IFS= read -r html; do
     esac
 done < <(find public -name '*.html' -type f | sort)
 
+# Enforce "no web fonts, ever" from docs/PERFORMANCE.md. Any font file in
+# the build output is a charter violation.
+font_files=$(find public -type f \( \
+    -name '*.woff2' -o -name '*.woff' \
+    -o -name '*.ttf' -o -name '*.otf' \
+    -o -name '*.eot' \) 2>/dev/null)
+if [[ -n "$font_files" ]]; then
+    fail "web font file(s) in build output (docs/PERFORMANCE.md forbids @font-face):"
+    while IFS= read -r font_file; do
+        printf '    %s\n' "$font_file"
+    done <<< "$font_files"
+else
+    pass "no web fonts shipped"
+fi
+
 # Advisory: total deploy size (not a per-visitor metric, but warn if it balloons)
 total_public=$(find public -type f -not -path '*/.*' -exec cat {} + 2>/dev/null | wc -c | tr -d ' ')
 if (( total_public > ADVISORY_TOTAL_PUBLIC )); then
@@ -214,7 +230,7 @@ printf '  worst first-paint bytes: %s B (%s%% of 14 KB initcwnd)\n' "$worst_tota
 printf '  violations             : %s\n' "$violations"
 
 if (( violations > 0 )); then
-    printf '\n%s %s\n' "$(red 'BUDGET FAIL')" "$violations violations - see CLAUDE.md for budgets"
+    printf '\n%s %s\n' "$(red 'BUDGET FAIL')" "$violations violations - see docs/PERFORMANCE.md for budgets"
     exit 1
 fi
 
