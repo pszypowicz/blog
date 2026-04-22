@@ -1,0 +1,50 @@
+<aside class="sidebar">
+  <header class="site-header">
+    <a class="site-name" href="{{ .Site.Home.RelPermalink }}">{{ .Site.Title }}</a>
+    {{- with .Site.Params.sidebar.subtitle }}
+    <p class="site-subtitle">{{ . }}</p>
+    {{- end }}
+  </header>
+
+  {{- with .Site.Menus.social }}
+  <ul class="menu-social">
+    {{- range . }}
+    <li><a href="{{ .URL }}" {{ if .Params.newTab }}target="_blank" rel="noopener me"{{ else }}rel="me"{{ end }} title="{{ .Name }}">
+      {{- with .Params.icon }}{{ partial "helper/icon" . }}{{ else }}{{ .Name }}{{ end -}}
+    </a></li>
+    {{- end }}
+  </ul>
+  {{- end }}
+
+  {{- with .Site.Menus.main }}
+  <nav class="menu" aria-label="Main">
+    <ul>
+      {{- $current := $ }}
+      {{- range . }}
+      {{- $active := or (eq $current.RelPermalink .URL) ($current.HasMenuCurrent "main" .) }}
+      <li{{ if $active }} class="current"{{ end }}><a href="{{ .URL }}">{{ .Name }}</a></li>
+      {{- end }}
+    </ul>
+  </nav>
+  {{- end }}
+
+  {{- /* Widget block - resolved by page kind. */ -}}
+  {{- $scope := "" -}}
+  {{- if or .IsHome .IsSection (eq .Kind "term") (eq .Kind "taxonomy") -}}
+    {{- $scope = "homepage" -}}
+  {{- else if .IsPage -}}
+    {{- $scope = "page" -}}
+  {{- end -}}
+
+  {{- with and $scope (index .Site.Params.widgets $scope) }}
+    {{- with where . "position" "ne" "bot" }}
+  <div class="widgets">
+      {{- range . -}}
+        {{- if templates.Exists (printf "_partials/widget/%s.html" .type) -}}
+          {{ partial (printf "widget/%s" .type) (dict "Context" $ "Params" (default dict .params)) }}
+        {{- end -}}
+      {{- end -}}
+  </div>
+    {{- end }}
+  {{- end }}
+</aside>

@@ -1,0 +1,23 @@
+{{- /* Secondary sidebar. Renders widgets tagged position = "bot".
+       On mobile this falls below <main>; on desktop it sits in the
+       left column under the primary sidebar via grid-template-areas. */ -}}
+{{- $scope := "" -}}
+{{- if or .IsHome .IsSection (eq .Kind "term") (eq .Kind "taxonomy") -}}
+  {{- $scope = "homepage" -}}
+{{- else if .IsPage -}}
+  {{- $scope = "page" -}}
+{{- end -}}
+
+{{- with and $scope (index .Site.Params.widgets $scope) -}}
+  {{- with where . "position" "eq" "bot" }}
+<aside class="sidebar-bot">
+  <div class="widgets">
+    {{- range . -}}
+      {{- if templates.Exists (printf "_partials/widget/%s.html" .type) -}}
+        {{ partial (printf "widget/%s" .type) (dict "Context" $ "Params" (default dict .params)) }}
+      {{- end -}}
+    {{- end -}}
+  </div>
+</aside>
+  {{- end -}}
+{{- end -}}

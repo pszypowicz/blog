@@ -1,0 +1,44 @@
+{{- /*
+    Modeline footer - rendered like a vim status bar. Zero bytes of
+    decoration; the content itself is the design. The byte count shown
+    is the site's thesis statement.
+*/ -}}
+{{- $readTime := "" -}}
+{{- $words := "" -}}
+{{- $mode := "NORMAL" -}}
+{{- if .IsPage -}}
+  {{- $mode = "POST" -}}
+  {{- $words = printf "%d words" .WordCount -}}
+  {{- $readTime = printf "%d min" .ReadingTime -}}
+{{- else if .IsHome -}}
+  {{- $mode = "HOME" -}}
+{{- else -}}
+  {{- $mode = upper .Kind -}}
+{{- end -}}
+<footer class="modeline">
+  <span class="modeline__mode">-- {{ $mode }} --</span>
+  <span class="modeline__sep">·</span>
+  <span class="modeline__host"><a href="{{ .Site.Home.RelPermalink }}">{{ replaceRE `^https?://` "" .Site.BaseURL | strings.TrimSuffix "/" }}</a></span>
+  {{- if .IsPage }}
+  <span class="modeline__sep">·</span>
+  <span class="modeline__date">{{ .Date.Format "2006-01-02" }}</span>
+  <span class="modeline__sep">·</span>
+  <span class="modeline__words">{{ $words }}</span>
+  <span class="modeline__sep">·</span>
+  <span class="modeline__read">{{ $readTime }}</span>
+  {{- end }}
+  <span class="modeline__sep">·</span>
+  <span class="modeline__build">built with Hugo · theme <a href="https://github.com/pszypowicz/hugo-theme-pager">pager</a></span>
+  {{- with or (os.Getenv "CF_PAGES_COMMIT_SHA") (os.Getenv "COMMIT_SHA") }}
+  {{- $sha := . -}}
+  {{- $short := substr $sha 0 7 -}}
+  <span class="modeline__sep">·</span>
+  <span class="modeline__sha">
+    {{- with $.Site.Params.repoURL -}}
+      <a href="{{ . }}/tree/{{ $sha }}" title="browse files at {{ $short }}">{{ $short }}</a>
+    {{- else -}}
+      <span title="site commit">{{ $short }}</span>
+    {{- end -}}
+  </span>
+  {{- end }}
+</footer>

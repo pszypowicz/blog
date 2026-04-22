@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <style>
+    .bg { fill: #F6F1E6; }
+    .fg { fill: #B44212; }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #12110F; }
+      .fg { fill: #D97757; }
+    }
+  </style>
+  <rect class="bg" width="64" height="64" rx="8"/>
+  <text x="32" y="48" text-anchor="middle"
+        font-family="ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, monospace"
+        font-size="44" font-weight="700" class="fg">§</text>
+</svg>

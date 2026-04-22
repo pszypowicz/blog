@@ -1,0 +1,43 @@
+/*
+ * Code blocks. No card, no shadow. A thin left gutter bar and a
+ * subtle tinted background. Horizontal overflow with a visible
+ * scrollbar + edge fades (see scripts/bench measurements: this
+ * adds ~120 B brotli for noticeable UX).
+ */
+
+pre, .highlight {
+  font-family: var(--mono-stack);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  background: var(--paper-2);
+  border-left: 3px solid var(--accent);
+  padding: var(--space-2) var(--space-3);
+  margin: var(--space-3) 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--rule) transparent;
+  max-width: 100%;
+  /* Never contribute min-content (longest non-breaking line) to ancestor
+     sizing. Combined with .main's `overflow-x: hidden`, this keeps the
+     grid track stable on iPad Safari even when code lines exceed 80ch. */
+  min-width: 0;
+}
+
+pre code, .highlight code {
+  font-family: inherit;
+  font-size: inherit;
+  background: transparent;
+  padding: 0;
+  border-bottom: none;
+  color: var(--ink);
+}
+
+pre::-webkit-scrollbar,
+.highlight::-webkit-scrollbar { height: 6px; }
+pre::-webkit-scrollbar-thumb,
+.highlight::-webkit-scrollbar-thumb { background: var(--rule); }
+pre::-webkit-scrollbar-track,
+.highlight::-webkit-scrollbar-track { background: transparent; }
+
+/* Chroma block wrapper */
+.highlight pre { margin: 0; padding: 0; border: 0; background: transparent; }

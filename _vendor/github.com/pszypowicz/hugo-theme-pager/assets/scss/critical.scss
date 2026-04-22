@@ -1,0 +1,18 @@
+/*
+ * Critical CSS - inlined in <head>, counted against the 14 KB
+ * first-flight budget.
+ *
+ * Everything above-the-fold: tokens, reset, typography, layout,
+ * sidebar, article cards, post header, modeline skeleton.
+ *
+ * Below-fold concerns (code blocks, chroma highlight, print)
+ * live in rest.scss and load deferred.
+ */
+
+@import "tokens";
+@import "reset";
+@import "typography";
+@import "layout";
+@import "widgets";
+@import "article";
+@import "modeline";

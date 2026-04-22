@@ -1,0 +1,33 @@
+/*
+ * Modeline footer - the vim-status-bar signature detail.
+ * Monospace, ember-tinted mode badge, soft dividers.
+ */
+
+.modeline {
+  font-family: var(--mono-stack);
+  font-size: 0.78rem;
+  color: var(--ink-3);
+  padding: var(--space-3) var(--page-pad);
+  border-top: 1px solid var(--rule);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6ch;
+  align-items: center;
+  max-width: calc(var(--col-aside) + var(--gutter) + var(--col-main) + 2 * var(--page-pad));
+  margin: var(--space-5) auto 0;
+}
+.modeline__mode {
+  color: var(--paper);
+  background: var(--accent);
+  padding: 0.1em 0.8em;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+.modeline__sep { color: var(--rule); }
+.modeline__host a,
+.modeline__build a {
+  color: var(--ink-2);
+  border-bottom: none;
+}
+.modeline__host a:hover,
+.modeline__build a:hover { color: var(--accent); }

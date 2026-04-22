@@ -1,0 +1,8 @@
+{{- $ctx := .Context -}}
+{{- $about := $ctx.Site.Params.widgets.about | default dict -}}
+{{- with $about.description }}
+<section class="widget widget--about">
+  <h2 class="widget__title">{{ $about.title | default "about" }}</h2>
+  <p class="widget__body">{{ . | safeHTML }}</p>
+</section>
+{{- end }}

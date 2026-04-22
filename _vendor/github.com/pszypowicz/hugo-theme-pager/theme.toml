@@ -1,0 +1,13 @@
+name = "Pager"
+license = "MIT"
+licenselink = "https://github.com/pszypowicz/hugo-theme-pager/blob/main/LICENSE"
+description = "A terminal-styled, 14 KB-single-round-trip Hugo theme for technical blogs."
+homepage = "https://github.com/pszypowicz/hugo-theme-pager"
+demosite = "https://blog.szypowi.cz/"
+tags = ["blog", "minimalist", "performance", "terminal"]
+features = ["zero-js", "zero-web-fonts-on-first-paint", "chroma-highlight", "ascii-toc", "print-stylesheet"]
+min_version = "0.160.0"
+
+[author]
+  name = "Przemysław Szypowicz"
+  homepage = "https://blog.szypowi.cz"

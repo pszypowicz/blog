@@ -1,0 +1,11 @@
+{{- $ctx := .Context -}}
+{{- with $ctx.Site.Taxonomies.categories }}
+<section class="widget widget--categories">
+  <h2 class="widget__title"># categories</h2>
+  <ul class="widget__taglist">
+    {{- range .Alphabetical }}
+    <li><a href="{{ .Page.RelPermalink }}">{{ .Page.Title }} <span class="widget__count">{{ .Count }}</span></a></li>
+    {{- end }}
+  </ul>
+</section>
+{{- end }}

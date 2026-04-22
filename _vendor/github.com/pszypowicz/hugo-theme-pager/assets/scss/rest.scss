@@ -1,0 +1,12 @@
+/*
+ * Deferred CSS - hashed external file, loaded non-blocking.
+ *
+ * Contains code-block styling, chroma syntax colors, and the print
+ * stylesheet. None of these apply to above-the-fold content on
+ * first paint.
+ */
+
+@import "tokens";       /* re-declared so deferred styles use the same palette in isolation */
+@import "code";
+@import "syntax";
+@import "print";

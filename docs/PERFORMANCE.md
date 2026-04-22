@@ -47,40 +47,22 @@ If a change drops any score, either the change is reverted or the charter is ame
 ## Build stack
 
 - **Hugo extended** (0.160+ for the asset pipeline: `resources.PostCSS`, `resources.Minify`, `resources.Fingerprint`, `resources.ExecuteAsTemplate`).
-- **Theme: `hugo-theme-pager`** as a git submodule at `themes/pager`. CSS and layout live inside the theme - there is no site-level override. The theme is versioned independently and pinned per blog commit.
+- **Theme: [`hugo-theme-pager`](https://github.com/pszypowicz/hugo-theme-pager)** consumed as a Hugo Module, pinned in `go.mod` and vendored under `_vendor/` so CI and Cloudflare Pages don't need a Go toolchain. CSS and layout live inside the theme - there is no site-level override. Paths below are relative to the theme's root.
 - **Hugo flags on every build**: `hugo --minify --gc`. No exceptions.
 - **PostCSS + cssnano** for additional CSS minification beyond Hugo's built-in minifier.
 - **Brotli-q11** precompression of every static asset in CI, shipped alongside the raw files. Cloudflare Pages serves the precompressed files when the client's `Accept-Encoding` header permits it.
 
 ## CSS strategy
 
-1. **Inline critical CSS in `<head>`**. `themes/pager/assets/scss/critical.scss` pulls only above-fold partials (reset, grid, menu, sidebar, article cards, layout/article) and is compiled + fingerprinted + inlined as `<style>` by `themes/pager/layouts/_partials/head/style.html`.
-2. **Defer non-critical CSS** (`themes/pager/assets/scss/rest.scss`) as a hashed external stylesheet via the standard trick:
-   ```html
-   <link
-     rel="preload"
-     href="/scss/rest.min.<hash>.css"
-     as="style"
-     onload="this.onload=null;this.rel='stylesheet'"
-   />
-   <noscript
-     ><link rel="stylesheet" href="/scss/rest.min.<hash>.css"
-   /></noscript>
-   ```
-   Contents: footer, pagination, widgets, listing-page layout, 404 page, and the chroma syntax-highlight block. `_headers` sets `Cache-Control: public, max-age=31536000, immutable` on `/*.css` so returning visitors hit the browser cache on every page after the first.
-3. **No `@import` in CSS**. Concatenate at build time.
-4. **Purge unused rules** against the actual rendered HTML. Today this is done at source inside `themes/pager/assets/scss/` - `critical.scss` imports only the partials needed for first paint, and `tokens.scss` holds the design tokens. Nothing is pulled in just to be stripped later.
-5. **Scoped styles** only where actually needed.
+Charter-level rules the theme must uphold:
 
-### Long content and the min-content gotcha
+- **Critical CSS inlined** in `<head>`, compiled from above-fold partials and fingerprinted.
+- **Non-critical CSS deferred** behind a `rel="preload" ... onload="this.rel='stylesheet'"` swap with a `<noscript>` fallback.
+- **Hashed filenames** on every stylesheet so they can ship `Cache-Control: public, max-age=31536000, immutable` via `_headers`.
+- **No `@import` at runtime.** Concatenate at build time.
+- **No unused rules.** Critical and deferred entry points import only what their tier needs.
 
-A grid item that contains non-wrapping content - a long `<pre>` line, a wide table, a long unbroken URL - reports a min-content at least as wide as its widest child. WebKit's grid algorithm can then inflate a fixed track past its declared size to fit that min-content, which on iPad Safari manifests as the main column shifting right between navigations (the exact bug that generated three v0.1.x releases chasing the wrong cause). The fix is layered across three properties that together break the min-content propagation chain:
-
-1. **`grid-template-columns: var(--col-aside) minmax(0, 1fr)`** on `.page`. `minmax(0, 1fr)` explicitly caps the main track's minimum at zero; no descendant can argue for a larger track.
-2. **`overflow-x: hidden`** on `.main`. Tells WebKit "I handle internal overflow myself, do not widen me to fit a descendant." Inner `<pre>` blocks keep their own `overflow-x: auto`, so long code still scrolls inside the `<pre>` - the outer hidden just stops the inflation from leaking upward.
-3. **`min-width: 0`** on `pre` / `.highlight`. Prevents the code block itself from contributing its widest-line min-content to ancestor sizing. Redundant with (2) in practice, defensive against future refactors that might remove the `.main` overflow.
-
-All three are load-bearing. Removing any one reintroduces the regression on iPad Safari, specifically after the second visit when content is already cached. See the comments in `themes/pager/assets/scss/_layout.scss` and `_code.scss` for the inline rationale.
+The current implementation of the above lives in the theme's `assets/scss/` and `layouts/` trees; changing it is a theme PR, not a blog PR.
 
 ## JavaScript strategy
 
@@ -96,30 +78,7 @@ The theme ships no JS by default. Any feature that would need JS must justify it
 
 ## Font strategy
 
-**System stack. No web fonts.**
-
-```css
-/* sans, used for body */
-font-family:
-  ui-sans-serif,
-  system-ui,
-  -apple-system,
-  "Segoe UI Variable Text",
-  "Segoe UI",
-  Roboto,
-  "Helvetica Neue",
-  Arial,
-  sans-serif;
-
-/* mono, used for headings, chrome, code */
-font-family:
-  ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas,
-  "Liberation Mono", monospace;
-```
-
-No `@font-face`, no `<link rel=preload as=font>`, no woff2 shipped. A web font was tried (Cascadia Code, `font-display: optional`, subset, metrics-matched) but produced visible layout flicker on iPad Safari: the font swaps in asynchronously on the second visit and the grid track sizes computed off the fallback min-content no longer match. The system stack avoids the race entirely and the charter wins on bytes.
-
-The site must score Lighthouse 100 on the system stack alone. If a rendering detail depends on a web font, the design is wrong, not the byte budget.
+**System stack only.** No `@font-face`, no `<link rel=preload as=font>`, no woff2 shipped. System fonts render instantly, never swap, cost zero bytes, and guarantee Lighthouse 100 without per-OS divergence. If a rendering detail depends on a web font, the design is wrong, not the byte budget.
 
 ## Image strategy
 
@@ -154,18 +113,17 @@ Every change goes through the test suite in `scripts/`. A PR that does not run c
 - `scripts/budget.sh` - enforce the byte budgets table above. One exit code per budget. CI-friendly.
 - `scripts/lighthouse.sh` - spin up a local Hugo server, run Lighthouse via `lhci`, assert the Core Web Vitals thresholds above. Uses `.lighthouserc.local.json` locally and `.lighthouserc.prod.json` when invoked with `--prod`. The two configs differ only on server-dependent audits (`uses-text-compression`, `uses-long-cache-ttl`): strict in prod, `warn` locally because `python3 -m http.server` sends neither Brotli nor cache headers.
 - `scripts/http-verify.sh` - against the deployed URL, verify: TLS 1.3 is negotiated, HTTP/3 is advertised, Brotli is served, immutable cache headers are present on hashed assets, ETag revalidation returns 304 on HTML.
-- `.pre-commit-config.yaml` - local enforcement. Runs `scripts/budget.sh` as a `perf-budget` hook whenever `content/`, `static/`, `themes/`, `config/`, or `hugo.toml` changes; `js-lint` (ESLint) and `js-typecheck` (tsc --checkJs) fire when theme JS changes. Also standard hygiene hooks (trailing whitespace, EOF fixer, YAML/JSON/TOML linting, shellcheck, 200 KB large-file guard). Install once with `pre-commit install`.
+- `.pre-commit-config.yaml` - local enforcement. Runs `scripts/budget.sh` as a `perf-budget` hook whenever `content/`, `static/`, `_vendor/`, `config/`, or `hugo.toml` changes. Also standard hygiene hooks (trailing whitespace, EOF fixer, YAML/JSON/TOML linting, shellcheck, 200 KB large-file guard). Install once with `pre-commit install`. Theme JS lint / typecheck live in the theme repo's own CI, not here.
 
 Tooling required (install once):
 
 ```
-brew install nghttp2 brotli hyperfine curl pre-commit
+brew install nghttp2 brotli hyperfine curl pre-commit go
 npm install -g lighthouse @lhci/cli
-npm install          # installs eslint + typescript for the theme JS lint/typecheck hooks
 pre-commit install
 ```
 
-Lighthouse CLI is installed globally. Local npm devDependencies (eslint, typescript, @eslint/js) only run the pre-commit static checks on the theme's dev-only JS; Cloudflare Pages skips them via `NPM_FLAGS=--omit=dev`. PostCSS/cssnano minification runs through Hugo's built-in pipeline, not a standalone npm install.
+Go is needed by Hugo Modules at `hugo mod get` / `hugo mod vendor` time; once `_vendor/` is populated, builds don't need it. Lighthouse CLI is installed globally. PostCSS/cssnano minification runs through Hugo's built-in pipeline, not a standalone npm install.
 
 The homebrew `curl` formula ships with HTTP/3 (ngtcp2 + nghttp3) enabled; use `/opt/homebrew/opt/curl/bin/curl --http3` for HTTP/3 probes since macOS's system curl does not support it.
 

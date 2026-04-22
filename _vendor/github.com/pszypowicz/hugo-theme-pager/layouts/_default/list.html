@@ -1,0 +1,46 @@
+{{ define "main" }}
+<header class="list__header">
+  <p class="list__kind">{{ humanize .Kind }}</p>
+  <h1 class="list__title">{{ .Title }}</h1>
+  {{- with .Description }}
+  <p class="list__description">{{ . }}</p>
+  {{- end }}
+  <p class="list__count">{{ len .Pages }} {{ if eq (len .Pages) 1 }}post{{ else }}posts{{ end }}</p>
+</header>
+
+{{- $paginator := .Paginate .Pages }}
+<ol class="post-list" reversed>
+  {{- range $paginator.Pages }}
+  <li class="post-list__item">
+    <article class="post-card">
+      {{- with .Params.categories }}
+      <p class="post-card__tag">{{ index . 0 }}</p>
+      {{- end }}
+      <h2 class="post-card__title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+      {{- with .Description }}
+      <p class="post-card__summary">{{ . }}</p>
+      {{- else }}
+      <p class="post-card__summary">{{ .Summary | plainify | truncate 200 }}</p>
+      {{- end }}
+      <p class="post-card__meta">
+        <time datetime="{{ .Date.Format `2006-01-02` }}">{{ .Date.Format "2006-01-02" }}</time>
+        <span class="post-card__sep">·</span>
+        <span>{{ .ReadingTime }} min read</span>
+      </p>
+    </article>
+  </li>
+  {{- end }}
+</ol>
+
+{{- if gt $paginator.TotalPages 1 }}
+<nav class="pagination" aria-label="Pagination">
+  {{- if $paginator.HasPrev }}
+  <a class="pagination__prev" rel="prev" href="{{ $paginator.Prev.URL }}">← Newer</a>
+  {{- end }}
+  <span class="pagination__status">{{ $paginator.PageNumber }} / {{ $paginator.TotalPages }}</span>
+  {{- if $paginator.HasNext }}
+  <a class="pagination__next" rel="next" href="{{ $paginator.Next.URL }}">Older →</a>
+  {{- end }}
+</nav>
+{{- end }}
+{{ end }}

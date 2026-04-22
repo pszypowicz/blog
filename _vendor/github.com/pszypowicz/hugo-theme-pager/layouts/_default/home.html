@@ -1,0 +1,28 @@
+{{ define "main" }}
+{{- $pages := where .Site.RegularPages "Type" "in" .Site.Params.mainSections -}}
+{{- if not $pages -}}
+  {{- $pages = where .Site.RegularPages "Type" "!=" "page" -}}
+{{- end -}}
+<ol class="post-list" reversed>
+  {{- range $pages }}
+  <li class="post-list__item">
+    <article class="post-card">
+      {{- with .Params.categories }}
+      <p class="post-card__tag">{{ index . 0 }}</p>
+      {{- end }}
+      <h2 class="post-card__title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+      {{- with .Description }}
+      <p class="post-card__summary">{{ . }}</p>
+      {{- else }}
+      <p class="post-card__summary">{{ .Summary | plainify | truncate 200 }}</p>
+      {{- end }}
+      <p class="post-card__meta">
+        <time datetime="{{ .Date.Format `2006-01-02` }}">{{ .Date.Format "2006-01-02" }}</time>
+        <span class="post-card__sep">·</span>
+        <span>{{ .ReadingTime }} min read</span>
+      </p>
+    </article>
+  </li>
+  {{- end }}
+</ol>
+{{ end }}

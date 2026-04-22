@@ -1,0 +1,48 @@
+{{ define "main" }}
+<article class="post">
+  <header class="post__header">
+    {{- with .Params.categories }}
+    <p class="post__category"><a href="{{ printf "/categories/%s/" (index . 0 | urlize) | relURL }}">{{ index . 0 }}</a></p>
+    {{- end }}
+    <h1 class="post__title">{{ .Title }}</h1>
+    {{- with .Description }}
+    <p class="post__summary">{{ . }}</p>
+    {{- end }}
+    <p class="post__meta">
+      <time datetime="{{ .Date.Format `2006-01-02` }}">{{ .Date.Format "2006-01-02" }}</time>
+      <span class="post__sep">·</span>
+      <span>{{ .ReadingTime }} min read</span>
+      {{- if .Params.ai_assisted }}
+      <span class="post__sep">·</span>
+      <span class="post__ai" title="Drafted with AI from my notes, edited before publishing">ai-assisted</span>
+      {{- end }}
+    </p>
+  </header>
+
+  <div class="post__body">
+    {{ .Content }}
+  </div>
+
+  {{- with .Params.tags }}
+  <footer class="post__footer">
+    <ul class="post__tags">
+      {{- range . }}
+      <li><a href="{{ printf "/tags/%s/" (. | urlize) | relURL }}">{{ . }}</a></li>
+      {{- end }}
+    </ul>
+  </footer>
+  {{- end }}
+</article>
+
+{{- $related := .Site.RegularPages.Related . | first 3 }}
+{{- with $related }}
+<aside class="related">
+  <h2 class="related__title">Related</h2>
+  <ul class="related__list">
+    {{- range . }}
+    <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+    {{- end }}
+  </ul>
+</aside>
+{{- end }}
+{{ end }}

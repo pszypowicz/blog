@@ -1,0 +1,22 @@
+{{- /*
+    Two-part stylesheet delivery.
+
+    Critical CSS is inlined in <style> so the first TCP flight after TLS
+    carries everything needed for first paint. Rest CSS is hashed and
+    loaded non-blocking. _headers in the site repo is expected to set
+    Cache-Control: public, max-age=31536000, immutable on /*.css.
+
+    Any budget script that measures the 14 KB first-flight should treat
+    any <link> with onload= as deferred and exclude it.
+*/ -}}
+{{- $critical := resources.Get "scss/critical.scss"
+    | toCSS (dict "outputStyle" "compressed")
+    | minify
+    | fingerprint "sha256" -}}
+<style>{{ $critical.Content | safeCSS }}</style>
+{{- $rest := resources.Get "scss/rest.scss"
+    | toCSS (dict "outputStyle" "compressed")
+    | minify
+    | fingerprint "sha256" -}}
+<link rel="preload" href="{{ $rest.RelPermalink }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="{{ $rest.RelPermalink }}"></noscript>

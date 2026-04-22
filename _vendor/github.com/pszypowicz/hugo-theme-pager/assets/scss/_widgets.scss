@@ -1,0 +1,86 @@
+/*
+ * Sidebar widgets. Flat, no cards; section titles as compact
+ * monospace lockups with a leading glyph.
+ */
+
+.widgets {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.widget__title {
+  font-family: var(--mono-stack);
+  font-size: 0.8rem;
+  text-transform: lowercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-3);
+  margin-bottom: var(--space-2);
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: var(--space-1);
+}
+
+.widget__body {
+  font-size: 0.9rem;
+  color: var(--ink-2);
+}
+
+.widget__taglist {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.widget__taglist a {
+  font-family: var(--mono-stack);
+  font-size: 0.85rem;
+  color: var(--ink-2);
+  border-bottom: none;
+  display: flex;
+  justify-content: space-between;
+}
+.widget__taglist a:hover { color: var(--accent); }
+.widget__count { color: var(--ink-3); }
+
+.widget__taglist--inline {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+}
+.widget__taglist--inline a {
+  display: inline;
+  font-size: 0.8rem;
+}
+.widget__taglist--inline a::before { content: "["; color: var(--ink-3); }
+.widget__taglist--inline a::after { content: "]"; color: var(--ink-3); }
+
+/* ── ASCII-tree TOC widget ───────────────────────────────────── */
+.widget__toc-tree {
+  background: transparent;
+  margin: 0;
+  padding: 0;
+  font-family: var(--mono-stack);
+  font-size: 0.82rem;
+  line-height: 1.35;
+  color: var(--ink-3);
+}
+.widget__toc-tree code {
+  background: transparent;
+  font-size: inherit;
+  display: block;
+  white-space: pre;
+}
+.widget__toc-tree a {
+  color: var(--ink-2);
+  border-bottom: none;
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.widget__toc-tree a code {
+  /* Inline `code` inside a TOC entry must stay on the same line as the
+     enclosing <a>, otherwise nested markup breaks the tree alignment. */
+  display: inline;
+  white-space: inherit;
+}
+.widget__toc-tree a:hover { color: var(--accent); }
