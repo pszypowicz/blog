@@ -1,7 +1,6 @@
 baseURL                = "https://blog.szypowi.cz/"
 languageCode           = "en-us"
 title                  = "blog.szypowi.cz"
-theme                  = "pager"
 defaultContentLanguage = "en"
 hasCJKLanguage         = false
 

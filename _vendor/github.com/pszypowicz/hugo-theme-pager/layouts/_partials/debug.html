@@ -1,0 +1,17 @@
+{{- /*
+    Layout debug overlay. Rendered when:
+      - running `hugo server` locally (hugo.IsServer), or
+      - building on a Cloudflare Pages preview branch (CF_PAGES_BRANCH
+        set and not equal to "main").
+    The production deploy on `main` gets zero bytes of this script.
+*/ -}}
+{{- $branch := os.Getenv "CF_PAGES_BRANCH" -}}
+{{- $isPreview := and (ne $branch "") (ne $branch "main") -}}
+{{- if or hugo.IsServer $isPreview }}
+<div id="dbg" style="position:fixed;bottom:0;right:0;z-index:99;background:#000c;color:#fff;padding:4px 8px;font:11px/1.3 ui-monospace,SFMono-Regular,monospace;white-space:pre;cursor:copy" title="tap to copy"></div>
+<div id="dbg-reload" style="position:fixed;bottom:0;left:0;z-index:99;background:#000c;color:#fff;padding:4px 8px;font:11px/1.3 ui-monospace,SFMono-Regular,monospace;cursor:pointer;user-select:none" title="toggle auto-reload on new deploy">auto-reload: ?</div>
+{{- $overlay := resources.Get "js/overlay.js" | js.Build (dict "minify" true "target" "es2020") | fingerprint "sha256" -}}
+{{- $reload  := resources.Get "js/autoreload.js" | js.Build (dict "minify" true "target" "es2020") | fingerprint "sha256" -}}
+<script src="{{ $overlay.RelPermalink }}" defer></script>
+<script src="{{ $reload.RelPermalink }}" defer></script>
+{{- end -}}

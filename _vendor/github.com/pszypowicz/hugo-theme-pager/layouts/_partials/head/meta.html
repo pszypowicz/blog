@@ -1,0 +1,29 @@
+{{- /*
+    Minimal open-graph and twitter-card metadata. No bloat.
+*/ -}}
+<meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
+<meta property="og:title" content="{{ .Title | default .Site.Title }}">
+<meta property="og:url" content="{{ .Permalink }}">
+{{- with .Description | default .Site.Params.description }}
+<meta property="og:description" content="{{ . }}">
+{{- end }}
+{{- with .Site.Params.sidebar.subtitle }}
+<meta property="og:site_name" content="{{ $.Site.Title }} · {{ . }}">
+{{- end }}
+<meta name="twitter:card" content="summary">
+{{- with .Site.Params.author }}
+<meta name="author" content="{{ . }}">
+{{- end }}
+{{- if .IsPage }}
+  {{- with .PublishDate }}
+<meta property="article:published_time" content="{{ .Format `2006-01-02T15:04:05Z07:00` }}">
+  {{- end }}
+  {{- with .Lastmod }}
+<meta property="article:modified_time" content="{{ .Format `2006-01-02T15:04:05Z07:00` }}">
+  {{- end }}
+{{- end }}
+{{- with .OutputFormats.Get "rss" }}
+<link rel="alternate" type="application/rss+xml" href="{{ .Permalink }}" title="{{ $.Site.Title }} feed">
+{{- end }}
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">

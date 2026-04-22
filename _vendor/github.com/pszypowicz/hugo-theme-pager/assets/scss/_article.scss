@@ -1,0 +1,238 @@
+/*
+ * Article + post-listing styles.
+ * No cards, no shadows, no rounded corners. Dividers and hierarchy.
+ */
+
+/* ── post listing (home, list pages) ──────────────────────────── */
+.post-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+.post-list__item { padding-bottom: var(--space-5); border-bottom: 1px solid var(--rule); }
+.post-list__item:last-child { border-bottom: 0; }
+
+.post-card__tag {
+  font-family: var(--mono-stack);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  margin-bottom: var(--space-1);
+}
+.post-card__title {
+  font-size: 1.55rem;
+  margin-bottom: var(--space-2);
+}
+.post-card__title a {
+  color: var(--ink);
+  border-bottom: none;
+}
+.post-card__title a:hover { color: var(--accent); }
+.post-card__summary {
+  color: var(--ink-2);
+  margin-bottom: var(--space-2);
+  max-width: 72ch;
+}
+.post-card__meta {
+  font-family: var(--mono-stack);
+  font-size: 0.82rem;
+  color: var(--ink-3);
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+.post-card__sep { color: var(--rule); }
+
+/* ── list page header ─────────────────────────────────────────── */
+.list__header {
+  margin-bottom: var(--space-5);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--rule);
+}
+.list__kind {
+  font-family: var(--mono-stack);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-3);
+}
+.list__title {
+  font-size: 2.2rem;
+  margin: var(--space-1) 0 var(--space-2);
+}
+.list__description { color: var(--ink-2); margin-bottom: var(--space-2); }
+.list__count {
+  font-family: var(--mono-stack);
+  font-size: 0.85rem;
+  color: var(--ink-3);
+}
+
+/* ── single post ──────────────────────────────────────────────── */
+.post__header {
+  margin-bottom: var(--space-5);
+  padding-bottom: var(--space-4);
+  border-bottom: 2px solid var(--ink);
+}
+.post__category {
+  font-family: var(--mono-stack);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: var(--space-1);
+}
+.post__category a { color: var(--accent); border-bottom: none; }
+.post__title {
+  font-size: 2.4rem;
+  margin-bottom: var(--space-2);
+  line-height: 1.15;
+}
+.post__summary {
+  color: var(--ink-2);
+  font-size: 1.1rem;
+  margin-bottom: var(--space-3);
+  max-width: 72ch;
+}
+.post__meta {
+  font-family: var(--mono-stack);
+  font-size: 0.85rem;
+  color: var(--ink-3);
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+.post__sep { color: var(--rule); }
+.post__ai {
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+}
+
+.post__body > * + * { margin-top: var(--space-3); }
+.post__body h2 {
+  margin-top: var(--space-5);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--rule);
+  font-size: 1.6rem;
+}
+.post__body h3 { margin-top: var(--space-4); font-size: 1.25rem; }
+.post__body h2::before,
+.post__body h3::before {
+  content: "§ ";
+  color: var(--accent);
+  font-weight: 400;
+}
+
+.post__body p { max-width: 72ch; }
+
+.post__body ul,
+.post__body ol {
+  padding-left: var(--space-3);
+  max-width: 72ch;
+}
+.post__body ul { list-style: none; }
+.post__body ul li::before {
+  content: "─ ";
+  color: var(--ink-3);
+  margin-left: calc(-1 * var(--space-3));
+  display: inline-block;
+  width: var(--space-3);
+}
+.post__body ol { list-style: decimal; }
+.post__body ol li::marker { color: var(--accent); font-family: var(--mono-stack); }
+
+.post__body blockquote {
+  border-left: 3px solid var(--accent);
+  padding: var(--space-1) var(--space-3);
+  margin: var(--space-3) 0;
+  color: var(--ink-2);
+  font-style: italic;
+  max-width: 72ch;
+}
+.post__body blockquote p { max-width: none; }
+
+.post__body code:not(pre code) {
+  color: var(--accent);
+  background: transparent;
+  padding: 0;
+}
+.post__body code:not(pre code)::before,
+.post__body code:not(pre code)::after {
+  content: "`";
+  color: var(--ink-3);
+}
+
+.post__body img {
+  margin: var(--space-4) 0;
+}
+
+.post__body a {
+  color: var(--accent);
+  border-bottom: 1px solid var(--rule);
+}
+.post__body a:hover {
+  color: var(--accent-2);
+  border-bottom-color: var(--accent);
+}
+
+/* ── post footer + tags ───────────────────────────────────────── */
+.post__footer {
+  margin-top: var(--space-5);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--rule);
+}
+.post__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.post__tags a {
+  font-family: var(--mono-stack);
+  font-size: 0.82rem;
+  color: var(--ink-2);
+  border: 1px solid var(--rule);
+  padding: 0.1em 0.6em;
+}
+.post__tags a:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.post__tags a::before { content: "["; color: var(--ink-3); margin-right: 0.2em; }
+.post__tags a::after { content: "]"; color: var(--ink-3); margin-left: 0.2em; }
+
+/* ── related posts ────────────────────────────────────────────── */
+.related {
+  margin-top: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--rule);
+}
+.related__title {
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-3);
+  margin-bottom: var(--space-2);
+}
+.related__list { display: flex; flex-direction: column; gap: var(--space-1); }
+.related__list a { border-bottom: none; }
+.related__list li::before { content: "→  "; color: var(--accent); font-family: var(--mono-stack); }
+
+/* ── pagination ───────────────────────────────────────────────── */
+.pagination {
+  margin-top: var(--space-5);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--rule);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--mono-stack);
+  font-size: 0.9rem;
+}
+.pagination a { border-bottom: none; color: var(--ink-2); }
+.pagination a:hover { color: var(--accent); }
+.pagination__status { color: var(--ink-3); }
+
+/* ── not-found ────────────────────────────────────────────────── */
+.not-found { text-align: center; padding: var(--space-6) 0; }
+.not-found__code { color: var(--accent); margin-bottom: var(--space-3); }

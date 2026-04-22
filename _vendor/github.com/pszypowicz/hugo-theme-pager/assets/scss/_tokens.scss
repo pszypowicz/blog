@@ -1,0 +1,56 @@
+/*
+ * Design tokens.
+ *
+ * Palette, type scale, grid units, and semantic variables.
+ * Single source of truth; everything downstream references these.
+ */
+
+:root {
+  /* ── palette: warm paper, deep ink, ember accent ───────────── */
+  --paper:     #F6F1E6;
+  --paper-2:   #EEE7D5;        /* slightly darker for rules / code bg */
+  --ink:       #1B1A18;
+  --ink-2:     #433F38;
+  --ink-3:     #76706A;
+  --accent:    #B44212;        /* ember */
+  --accent-2:  #8B2F0A;        /* pressed / visited */
+  --rule:      #C9BFA6;        /* hairline dividers */
+  --selection: rgba(180, 66, 18, 0.22);
+
+  /* ── typography ─────────────────────────────────────────────── */
+  --mono-stack: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  --sans-stack: ui-sans-serif, system-ui, -apple-system, "Segoe UI Variable Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --serif-stack: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+
+  --fs-base: 16px;             /* root font size; sizing uses rem from here */
+  --lh-body: 1.6;
+  --lh-tight: 1.25;
+
+  /* ── grid ───────────────────────────────────────────────────── */
+  --col-main: 80ch;            /* reading column cap */
+  --col-aside: 22ch;           /* sidebar width */
+  --gutter: 4ch;               /* sidebar ↔ main */
+  --page-pad: 2ch;
+
+  /* vertical rhythm uses line-height multiples */
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2rem;
+  --space-5: 3rem;
+  --space-6: 4rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper:     #12110F;
+    --paper-2:   #1C1B18;
+    --ink:       #E8E3D5;
+    --ink-2:     #B3ACA0;
+    --ink-3:     #7C766C;
+    --accent:    #D97757;
+    --accent-2:  #F59A7E;
+    --rule:      #2E2B26;
+    --selection: rgba(217, 119, 87, 0.28);
+  }
+}

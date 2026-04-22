@@ -1,0 +1,51 @@
+/*
+ * Print stylesheet. Turn posts into real technical papers.
+ * Serif body, hide sidebar + modeline, expand URLs inline.
+ */
+
+@media print {
+  :root {
+    --paper: #ffffff;
+    --ink: #000000;
+    --ink-2: #222222;
+    --ink-3: #555555;
+    --accent: #000000;
+    --rule: #cccccc;
+  }
+
+  body { font-family: var(--serif-stack); font-size: 11pt; line-height: 1.5; }
+
+  .sidebar, .modeline, .related, .pagination, .menu, .menu-social { display: none !important; }
+
+  .page {
+    display: block;
+    max-width: none;
+    padding: 0;
+    margin: 0;
+  }
+  .main { max-width: none; }
+
+  h1, h2, h3, h4 { font-family: var(--serif-stack); page-break-after: avoid; }
+  h2, h3 { page-break-after: avoid; }
+
+  /* drop the ember `§` glyph on paper - decoration only, not content */
+  .post__body h2::before,
+  .post__body h3::before { content: ""; }
+
+  .post__body a::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+    color: var(--ink-3);
+    word-break: break-all;
+  }
+
+  pre, .highlight {
+    background: none;
+    border-left-color: var(--ink);
+    page-break-inside: avoid;
+    font-size: 9pt;
+  }
+
+  /* footnotes at page bottom */
+  .footnotes { font-size: 9pt; border-top: 1px solid var(--rule); padding-top: 1em; }
+}

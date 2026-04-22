@@ -33,8 +33,8 @@ scripts/http-verify.sh  # post-deploy: TLS 1.3, HTTP/3, Brotli, cache headers
 ## Layout
 
 - `content/` - posts and pages
-- `config/_default/` - Hugo config split by concern (hugo, params, menu, markup, languages)
-- `themes/pager/` - theme submodule
+- `config/_default/` - Hugo config split by concern (hugo, params, menu, markup, module, languages)
+- `_vendor/` - Hugo Modules vendored tree (theme lives here; pinned in `go.mod`)
 - `scripts/` - budget and perf verification
 - `docs/` - public performance charter
 
@@ -44,14 +44,14 @@ scripts/http-verify.sh  # post-deploy: TLS 1.3, HTTP/3, Brotli, cache headers
 
 ```sh
 git checkout -b <topic>             # branch off main
-# edit, commit (pre-commit runs budget / lint / typecheck on staged files)
+# edit, commit (pre-commit runs the perf budget on staged files)
 git push -u origin <topic>
 gh pr create --fill                 # opens PR against main
 ```
 
 Opening the PR triggers:
 
-- **GitHub Actions** (`.github/workflows/perf.yml`) - runs `budget`, `lint`, `lighthouse` jobs. Required to pass before merge.
+- **GitHub Actions** (`.github/workflows/perf.yml`) - runs `budget` and `lighthouse` jobs. Required to pass before merge.
 - **Cloudflare Pages preview** - auto-deploys the branch to `https://<branch>.blog-szypowicz.pages.dev/`. Open it on the iPad / desktop to visually verify.
 
 Once green:
@@ -62,7 +62,13 @@ gh pr merge --squash --delete-branch
 
 Production (`main` on Cloudflare Pages) rebuilds automatically from the merged commit.
 
-Theme changes (`themes/pager/`) follow the same pattern in the [`hugo-theme-pager`](https://github.com/pszypowicz/hugo-theme-pager) repo; merge theme PRs first, then bump the submodule pointer here via a blog PR.
+Theme changes happen in the [`hugo-theme-pager`](https://github.com/pszypowicz/hugo-theme-pager) repo. After a theme release, bump the pin here via:
+
+```sh
+hugo mod get github.com/pszypowicz/hugo-theme-pager@vX.Y.Z
+hugo mod vendor
+# commit go.mod, go.sum, and _vendor/ in a blog PR
+```
 
 ## License
 

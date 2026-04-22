@@ -1,0 +1,48 @@
+/*
+ * Chroma syntax highlight - ember-on-paper palette.
+ *
+ * Trimmed to the token classes Hugo's chroma actually emits.
+ * Two schemes selected by prefers-color-scheme.
+ *
+ * This entire file is on the deferred path (rest.scss only).
+ */
+
+/* light (default) */
+.chroma { color: var(--ink); background: transparent; }
+.chroma .err { color: #D04040; }            /* error */
+.chroma .k, .chroma .kn, .chroma .kt, .chroma .kd, .chroma .kp, .chroma .kr,
+.chroma .bp { color: #8B2F0A; font-weight: 600; } /* keyword / builtin */
+.chroma .s, .chroma .s1, .chroma .s2, .chroma .sb, .chroma .sc,
+.chroma .dl, .chroma .sx, .chroma .se, .chroma .sr, .chroma .ss { color: #6B5F30; } /* string */
+.chroma .m, .chroma .mi, .chroma .mf, .chroma .mh, .chroma .mo, .chroma .mb,
+.chroma .il { color: #4A6B2F; } /* number */
+.chroma .c, .chroma .c1, .chroma .cm, .chroma .cp, .chroma .cpf, .chroma .cs,
+.chroma .ch { color: #9B9084; font-style: italic; } /* comment */
+.chroma .o, .chroma .ow { color: #B44212; } /* operator */
+.chroma .n, .chroma .nb, .chroma .nv, .chroma .vc, .chroma .vg, .chroma .vi,
+.chroma .nx { color: var(--ink); }
+.chroma .nf, .chroma .nc, .chroma .nn { color: #2F6B8B; } /* function / class */
+.chroma .na { color: #8B2F6B; } /* attribute */
+.chroma .p { color: var(--ink-2); } /* punctuation */
+
+/* line numbers (if ever emitted) */
+.chroma .ln, .chroma .lnt { color: var(--ink-3); margin-right: var(--space-2); }
+
+/* line highlight */
+.chroma .hl { background: rgba(180, 66, 18, 0.08); }
+
+@media (prefers-color-scheme: dark) {
+  .chroma .err { color: #F08080; }
+  .chroma .k, .chroma .kn, .chroma .kt, .chroma .kd, .chroma .kp, .chroma .kr,
+  .chroma .bp { color: #F59A7E; }
+  .chroma .s, .chroma .s1, .chroma .s2, .chroma .sb, .chroma .sc,
+  .chroma .dl, .chroma .sx, .chroma .se, .chroma .sr, .chroma .ss { color: #D5C88A; }
+  .chroma .m, .chroma .mi, .chroma .mf, .chroma .mh, .chroma .mo, .chroma .mb,
+  .chroma .il { color: #A5CC7A; }
+  .chroma .c, .chroma .c1, .chroma .cm, .chroma .cp, .chroma .cpf, .chroma .cs,
+  .chroma .ch { color: #7C766C; }
+  .chroma .o, .chroma .ow { color: #D97757; }
+  .chroma .nf, .chroma .nc, .chroma .nn { color: #8AC1E0; }
+  .chroma .na { color: #D99AC8; }
+  .chroma .hl { background: rgba(217, 119, 87, 0.12); }
+}

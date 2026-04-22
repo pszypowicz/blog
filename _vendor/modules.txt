@@ -1,0 +1,1 @@
+# github.com/pszypowicz/hugo-theme-pager v0.2.2

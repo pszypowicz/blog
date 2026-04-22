@@ -18,7 +18,6 @@ repos:
       - id: check-merge-conflict
       - id: check-added-large-files
         args: ["--maxkb=200"]
-        exclude: ^tests/visual/.*-snapshots/.*\.png$
       - id: mixed-line-ending
         args: ["--fix=lf"]
 
@@ -36,22 +35,8 @@ repos:
         language: system
         pass_filenames: false
         always_run: false
-        files: ^(content/|static/|themes/|config/|hugo\.toml)
+        files: ^(content/|static/|_vendor/|config/|hugo\.toml)
         description: >
           Build the site and enforce the byte / single-packet / zero-JS
           budgets defined in docs/PERFORMANCE.md. Only fires when site
           sources change.
-
-      - id: js-lint
-        name: ESLint (themes/pager/assets/js)
-        entry: npm run --silent lint
-        language: system
-        pass_filenames: false
-        files: ^(themes/pager/assets/js/|eslint\.config\.mjs$)
-
-      - id: js-typecheck
-        name: tsc --checkJs (themes/pager/assets/js)
-        entry: npm run --silent typecheck
-        language: system
-        pass_filenames: false
-        files: ^(themes/pager/assets/js/|themes/pager/jsconfig\.json$)

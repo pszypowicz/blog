@@ -1,0 +1,59 @@
+{{- /*
+    ASCII-tree table of contents.
+
+    .Fragments.Headings returns a virtual level-0 root whose .Headings
+    are the page's H2s. Each H2 has .Headings for its H3s. We flatten
+    H2+H3 into a linear list, then mark the last entry at each depth so
+    U+2514 vs U+251C is drawn correctly. The tree is monospace-aligned.
+*/ -}}
+{{- $ctx := .Context -}}
+{{- if $ctx.IsPage -}}
+  {{- $root := index $ctx.Fragments.Headings 0 -}}
+  {{- with $root.Headings -}}
+    {{- $items := slice -}}
+    {{- range . -}}
+      {{- if eq .Level 2 -}}
+        {{- $items = $items | append (dict "level" 1 "title" .Title "id" .ID) -}}
+        {{- range .Headings -}}
+          {{- if eq .Level 3 -}}
+            {{- $items = $items | append (dict "level" 2 "title" .Title "id" .ID) -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if gt (len $items) 0 -}}
+<section class="widget widget--toc">
+  <h2 class="widget__title"># contents</h2>
+  <pre class="widget__toc-tree" aria-label="Table of contents"><code>
+{{- range $i, $item := $items -}}
+  {{- $isLastAtLevel := true -}}
+  {{- range $j, $other := $items -}}
+    {{- if and (gt $j $i) (eq $other.level $item.level) -}}
+      {{- $isLastAtLevel = false -}}
+    {{- end -}}
+    {{- if and (gt $j $i) (lt $other.level $item.level) -}}
+      {{- break -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $branch := cond $isLastAtLevel "└─ " "├─ " -}}
+  {{- $indent := "" -}}
+  {{- if eq $item.level 2 -}}
+    {{- $parentIsLast := true -}}
+    {{- range $j, $other := $items -}}
+      {{- if and (lt $j $i) (eq $other.level 1) -}}
+        {{- $hasLaterH2 := false -}}
+        {{- range $k, $lookahead := $items -}}
+          {{- if and (gt $k $j) (eq $lookahead.level 1) -}}{{- $hasLaterH2 = true -}}{{- end -}}
+        {{- end -}}
+        {{- if $hasLaterH2 -}}{{- $parentIsLast = false -}}{{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $indent = cond $parentIsLast "   " "│  " -}}
+  {{- end -}}
+<a href="#{{ $item.id }}" title="{{ $item.title | plainify }}">{{ $indent }}{{ $branch }}{{ $item.title | safeHTML }}</a>
+{{ end -}}
+</code></pre>
+</section>
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

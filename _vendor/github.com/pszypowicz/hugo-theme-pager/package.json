@@ -1,0 +1,15 @@
+{
+  "name": "hugo-theme-pager",
+  "private": true,
+  "description": "Dev tooling for linting and typechecking the theme's JS assets.",
+  "scripts": {
+    "lint": "eslint assets/js",
+    "typecheck": "tsc -p jsconfig.json"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@eslint/js": "^9.39.4",
+    "eslint": "^9.39.4",
+    "typescript": "^5.9.3"
+  }
+}
