@@ -41,4 +41,6 @@ jobs:
             || { echo "::error::curl on this runner lacks HTTP/3 support"; exit 2; }
 
       - name: Run http-verify
-        run: scripts/http-verify.sh '${{ inputs.url || 'https://blog.szypowi.cz/' }}'
+        env:
+          URL: ${{ inputs.url || 'https://blog.szypowi.cz/' }}
+        run: scripts/http-verify.sh "$URL"
