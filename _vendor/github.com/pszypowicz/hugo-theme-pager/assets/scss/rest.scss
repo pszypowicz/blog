@@ -1,9 +1,10 @@
 /*
  * Deferred CSS - hashed external file, loaded non-blocking.
  *
- * Contains code-block styling, chroma syntax colors, and the print
- * stylesheet. None of these apply to above-the-fold content on
- * first paint.
+ * Contains code-block color, chroma syntax colors, and the print
+ * stylesheet. Nothing here may affect layout: geometry for these
+ * elements rides the critical tier so this file's arrival after
+ * first paint cannot shift anything.
  */
 
 @import "tokens";       /* re-declared so deferred styles use the same palette in isolation */

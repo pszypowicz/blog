@@ -8,12 +8,21 @@
 
     Any budget script that measures the 14 KB first-flight should treat
     any <link> with onload= as deferred and exclude it.
+
+    The TrimPrefix below is load-bearing: LibSass prepends a UTF-8 BOM
+    to compressed output whenever it contains a non-ASCII code point
+    (this theme's glyph content strings do). A BOM inside <style> makes
+    the browser reject the stylesheet's first rule - which here is
+    :root, the entire custom-property block - so every var()-derived
+    style silently dies until the deferred sheet re-declares the tokens,
+    reflowing the whole page. External .css files are immune (BOMs are
+    consumed at byte decoding), inline <style> is not.
 */ -}}
 {{- $critical := resources.Get "scss/critical.scss"
     | toCSS (dict "outputStyle" "compressed")
     | minify
     | fingerprint "sha256" -}}
-<style>{{ $critical.Content | safeCSS }}</style>
+<style>{{ $critical.Content | strings.TrimPrefix "\ufeff" | safeCSS }}</style>
 {{- $rest := resources.Get "scss/rest.scss"
     | toCSS (dict "outputStyle" "compressed")
     | minify

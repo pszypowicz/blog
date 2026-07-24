@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  HUGO_VERSION: '0.160.1'
+  HUGO_VERSION: '0.164.0'
 
 jobs:
   budget:
@@ -46,7 +46,7 @@ jobs:
           version: ${{ env.HUGO_VERSION }}
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444  # v5.0.0
         with:
-          node-version: '22'
+          node-version: '24'
       - name: Install lhci + lighthouse
         run: npm install -g @lhci/cli lighthouse
       - name: Install brotli
