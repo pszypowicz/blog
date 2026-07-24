@@ -1,2 +1,10 @@
+# Exact Hugo pin. Same value as HUGO_VERSION in .github/workflows/perf.yml and
+# the Cloudflare Pages build env var - keep all three in sync. A mismatch is a
+# build WARN, not an error; CI and Pages enforce the exact binary themselves.
+[hugoVersion]
+  extended = true
+  min      = "0.164.0"
+  max      = "0.164.0"
+
 [[imports]]
   path = "github.com/pszypowicz/hugo-theme-pager"

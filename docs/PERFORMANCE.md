@@ -46,10 +46,9 @@ If a change drops any score, either the change is reverted or the charter is ame
 
 ## Build stack
 
-- **Hugo extended** (0.160+ for the asset pipeline: `resources.PostCSS`, `resources.Minify`, `resources.Fingerprint`, `resources.ExecuteAsTemplate`).
+- **Hugo extended**, exact version pinned in `config/_default/module.toml` (`module.hugoVersion`) and mirrored by `HUGO_VERSION` in `.github/workflows/perf.yml` and the Cloudflare Pages build env var. The asset pipeline is Hugo-native: `toCSS` (Sass, needs extended), `minify`, `fingerprint` - no Node tools at build time.
 - **Theme: [`hugo-theme-pager`](https://github.com/pszypowicz/hugo-theme-pager)** consumed as a Hugo Module, pinned in `go.mod` and vendored under `_vendor/` so CI and Cloudflare Pages don't need a Go toolchain. CSS and layout live inside the theme - there is no site-level override. Paths below are relative to the theme's root.
 - **Hugo flags on every build**: `hugo --minify --gc`. No exceptions.
-- **PostCSS + cssnano** for additional CSS minification beyond Hugo's built-in minifier.
 - **Brotli-q11** precompression of every static asset in CI, shipped alongside the raw files. Cloudflare Pages serves the precompressed files when the client's `Accept-Encoding` header permits it.
 
 ## CSS strategy

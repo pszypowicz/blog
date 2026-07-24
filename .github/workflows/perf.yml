@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  HUGO_VERSION: '0.160.1'
+  HUGO_VERSION: '0.164.0'
 
 jobs:
   budget:
