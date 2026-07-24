@@ -1,0 +1,41 @@
+/*
+ * Code block geometry - critical tier.
+ *
+ * Every property that affects layout (font metrics, box, border
+ * widths, overflow, scrollbar sizing) must live here: the deferred
+ * stylesheet arrives after first paint, and a swap that moves layout
+ * is a CLS violation (budget 0.01). _code.scss on the deferred path
+ * may only recolor these boxes.
+ */
+
+pre, .highlight {
+  font-family: var(--mono-stack);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  border-left: 3px solid var(--accent);
+  padding: var(--space-2) var(--space-3);
+  margin: var(--space-3) 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  max-width: 100%;
+  /* Never contribute min-content (longest non-breaking line) to ancestor
+     sizing. Combined with .main's `overflow-x: hidden`, this keeps the
+     grid track stable on iPad Safari even when code lines exceed 80ch. */
+  min-width: 0;
+}
+
+/* Inline-code typography (`code { font-size: 0.92em }`) must not leak
+   into blocks, and the reset has to ride the critical tier or the
+   deferred swap changes glyph sizes and reflows. */
+pre code, .highlight code {
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0;
+  border-bottom: none;
+}
+
+pre::-webkit-scrollbar,
+.highlight::-webkit-scrollbar { height: 6px; }
+
+/* Chroma block wrapper: the outer .highlight owns the box */
+.highlight pre { margin: 0; padding: 0; border: 0; }

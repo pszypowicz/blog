@@ -3,9 +3,10 @@
  * first-flight budget.
  *
  * Everything above-the-fold: tokens, reset, typography, layout,
- * sidebar, article cards, post header, modeline skeleton.
+ * sidebar, article cards, post header, modeline skeleton, and code
+ * block geometry (so the deferred swap can recolor but never reflow).
  *
- * Below-fold concerns (code blocks, chroma highlight, print)
+ * Below-fold concerns (code block color, chroma highlight, print)
  * live in rest.scss and load deferred.
  */
 
@@ -16,3 +17,4 @@
 @import "widgets";
 @import "article";
 @import "modeline";
+@import "code-layout";

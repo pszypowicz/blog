@@ -1,1 +1,1 @@
-# github.com/pszypowicz/hugo-theme-pager v0.2.3
+# github.com/pszypowicz/hugo-theme-pager v0.2.4
