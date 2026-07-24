@@ -4,12 +4,16 @@
   "description": "Dev tooling for linting and typechecking the theme's JS assets.",
   "scripts": {
     "lint": "eslint assets/js",
-    "typecheck": "tsc -p jsconfig.json"
+    "typecheck": "tsc -p jsconfig.json",
+    "screenshots": "node scripts/capture-screenshots.mjs"
   },
   "type": "module",
   "devDependencies": {
     "@eslint/js": "^9.39.4",
     "eslint": "^9.39.4",
     "typescript": "^5.9.3"
+  },
+  "optionalDependencies": {
+    "playwright": "^1.59.1"
   }
 }
