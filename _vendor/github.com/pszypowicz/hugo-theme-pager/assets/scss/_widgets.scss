@@ -19,6 +19,9 @@
   border-bottom: 1px solid var(--rule);
   padding-bottom: var(--space-1);
 }
+/* Leading glyph lives here, not in templates, so every widget title
+   (including config-supplied ones) gets the same lockup. */
+.widget__title::before { content: "# "; }
 
 .widget__body {
   font-size: 0.9rem;
@@ -54,6 +57,34 @@
 .widget__taglist--inline a::after { content: "]"; color: var(--ink-3); }
 
 /* ── ASCII-tree TOC widget ───────────────────────────────────── */
+
+/* The TOC is a <details>, collapsed by default so it does not push the
+   article title off the first mobile screen. Desktop forces the closed
+   element's content visible and neutralizes the toggle, so the tree
+   reads as the same static widget as before. Browsers without
+   ::details-content degrade to a working collapsed disclosure on
+   desktop too - never a hidden-forever tree. */
+.widget__summary {
+  cursor: pointer;
+  list-style: none;
+}
+.widget__summary::-webkit-details-marker { display: none; }
+.widget__summary .widget__title::after {
+  content: " [+]";
+  color: var(--ink-3);
+}
+.widget--toc[open] .widget__summary .widget__title::after { content: " [-]"; }
+
+@media (min-width: 768px) {
+  /* Interpolated because LibSass cannot parse selector() conditions;
+     the string passes through to the emitted CSS verbatim. */
+  @supports #{"selector(::details-content)"} {
+    .widget--toc::details-content { content-visibility: visible; }
+    .widget__summary { pointer-events: none; }
+    .widget__summary .widget__title::after { content: none; }
+  }
+}
+
 .widget__toc-tree {
   background: transparent;
   margin: 0;

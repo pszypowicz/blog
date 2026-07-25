@@ -30,10 +30,22 @@
   gap: var(--space-4);
 }
 
-/* Mobile: wrapper is transparent so sidebar-bot (taxonomy) can flow
-   below main via order. Desktop promotes wrapper to a sticky flex column. */
+/* Mobile: wrappers are transparent so children can flow below main
+   via order. List views keep the menu between the socials and the
+   content; single views (.kind-page) send the menu and the about
+   widget below the article - on a stacked post they are footer
+   furniture, not preamble. The page grid's gap matches the wrappers'
+   internal gap, so spacing between the freed children does not
+   change. Desktop restores the flex columns and source order. */
 .sidebar-col { display: contents; }
+.sidebar { display: contents; }
+/* Scoped under .sidebar for two reasons: sidebar-bot's widget stack
+   must stay flex, and the selector must outrank the .widgets base
+   rule, which is declared later in import order. */
+.sidebar .widgets { display: contents; }
 .sidebar-bot { order: 1; }
+.kind-page .menu { order: 1; }
+.kind-page .widget--about { order: 2; }
 
 @media (min-width: 768px) {
   .page {
@@ -59,7 +71,11 @@
     scrollbar-width: thin;
   }
   .main        { grid-area: main; }
+  .sidebar     { display: flex; }
+  .sidebar .widgets { display: flex; }
   .sidebar-bot { order: 0; }
+  .kind-page .menu { order: 0; }
+  .kind-page .widget--about { order: 0; }
 }
 
 /* site header block inside sidebar */
@@ -93,8 +109,15 @@
 .menu a {
   font-family: var(--mono-stack);
   font-size: 0.95rem;
+  text-transform: lowercase;
   color: var(--ink-2);
   border-bottom: none;
+}
+/* The accent ./ is the idle-state tap affordance: menu links carry no
+   underline and hover states do not exist on touch screens. */
+.menu a::before {
+  content: "./";
+  color: var(--accent);
 }
 .menu a:hover { color: var(--accent); }
 .menu li.current a {

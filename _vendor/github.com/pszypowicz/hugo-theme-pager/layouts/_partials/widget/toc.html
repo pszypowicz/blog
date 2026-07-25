@@ -22,8 +22,8 @@
       {{- end -}}
     {{- end -}}
     {{- if gt (len $items) 0 -}}
-<section class="widget widget--toc">
-  <h2 class="widget__title"># contents</h2>
+<details class="widget widget--toc">
+  <summary class="widget__summary"><h2 class="widget__title">contents</h2></summary>
   <pre class="widget__toc-tree" aria-label="Table of contents"><code>
 {{- range $i, $item := $items -}}
   {{- $isLastAtLevel := true -}}
@@ -53,7 +53,7 @@
 <a href="#{{ $item.id }}" title="{{ $item.title | plainify }}">{{ $indent }}{{ $branch }}{{ $item.title | safeHTML }}</a>
 {{ end -}}
 </code></pre>
-</section>
+</details>
     {{- end -}}
   {{- end -}}
 {{- end -}}

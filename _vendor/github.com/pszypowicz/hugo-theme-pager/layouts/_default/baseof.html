@@ -12,7 +12,7 @@
 {{- partial "head/style.html" . -}}
 {{- block "head" . }}{{ end -}}
 </head>
-<body>
+<body class="kind-{{ .Kind }}">
 <div class="page">
 <div class="sidebar-col">
 {{- partial "sidebar.html" . -}}
