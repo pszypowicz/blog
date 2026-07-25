@@ -12,6 +12,7 @@ repoURL            = "https://github.com/pszypowicz/blog"
         { type = "tags", position = "bot" },
     ]
     page = [
+        { type = "about" },
         { type = "toc" },
     ]
 
