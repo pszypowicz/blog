@@ -17,5 +17,5 @@ repoURL            = "https://github.com/pszypowicz/blog"
     ]
 
     [widgets.about]
-        title       = "about"
+        title       = "whoami"
         description = "Engineering notes from Przemek. Focused on performance, the command line, and how the web actually moves bytes."
