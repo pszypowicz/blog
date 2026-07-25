@@ -12,10 +12,9 @@ repoURL            = "https://github.com/pszypowicz/blog"
         { type = "tags", position = "bot" },
     ]
     page = [
-        { type = "about" },
         { type = "toc" },
     ]
 
     [widgets.about]
-        title       = "about"
+        title       = "whoami"
         description = "Engineering notes from Przemek. Focused on performance, the command line, and how the web actually moves bytes."
