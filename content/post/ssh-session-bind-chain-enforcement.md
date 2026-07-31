@@ -1,10 +1,11 @@
 +++
 title       = "ssh-agent enforces the session-bind chain only for constrained keys"
-date        = "2026-07-31T12:05:00+02:00"
+date        = "2026-08-07T12:00:00+02:00"
 description = "session-bind@openssh.com binds each agent connection to the SSH session it serves, and a forwarded connection accumulates one binding per hop. The agent verifies every binding it records, then consults the chain only for keys added with destination constraints."
 tags        = ["ssh", "openssh", "session-bind", "security"]
 categories  = ["security"]
 ai_assisted = true
+draft       = true
 +++
 
 OpenSSH 8.9 added a way to tell the agent where a signature is going. Every ssh

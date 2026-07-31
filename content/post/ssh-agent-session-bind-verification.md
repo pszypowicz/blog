@@ -1,10 +1,11 @@
 +++
 title       = "The session-bind signature check I skipped in my own SSH agent"
-date        = "2026-07-31T12:10:00+02:00"
+date        = "2026-08-21T12:00:00+02:00"
 description = "I built a Secure Enclave SSH agent that recorded session-bind chains and used them for per-destination approval, without verifying the host signature inside each binding. A hostile first hop can fabricate the entire route downstream of itself against an agent that does that."
 tags        = ["ssh", "secure-enclave", "macos", "security"]
 categories  = ["security"]
 ai_assisted = true
+draft       = true
 +++
 
 I have been building an SSH agent that keeps keys in the Secure Enclave and asks

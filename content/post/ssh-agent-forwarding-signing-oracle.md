@@ -158,9 +158,7 @@ Sometimes the work genuinely runs on the remote host. In rough order of value:
   binds the key so the agent refuses to sign for anything but the named path. This
   is the strongest option short of not forwarding. It wants OpenSSH 8.9 or newer at
   the agent and at every hop, a recent sshd at the destination, and every host you
-  name already present in `known_hosts` when you run `ssh-add`. I go through what
-  the agent does and does not enforce in
-  [the follow-up](/p/ssh-agent-enforces-the-session-bind-chain-only-for-constrained-keys/).
+  name already present in `known_hosts` when you run `ssh-add`.
 - **Touch per use.** A FIDO2 `sk-` key or a Secure Enclave key makes every
   signature need a physical tap, so silent background use fails and an unexpected
   prompt is your cue to refuse. It is defence in depth, and prompt fatigue defeats
