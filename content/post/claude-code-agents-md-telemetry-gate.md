@@ -55,6 +55,16 @@ echo '@AGENTS.md' > CLAUDE.md
 
 With that file in place, the same canary test returns the word with `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1` still set. The cost is one extra file per repo, which is what the `AGENTS.md` support was supposed to remove.
 
+## Why I think this is unacceptable
+
+I turned telemetry off on purpose, and I expect that choice to cost me some diagnostics and nothing else. Here it silently costs me a feature that reads a file from my own disk. A remote flag can make sense for a feature that talks to a server, but the only input this one needs is already in the working directory.
+
+The gate also hits the people who are most likely to care about `AGENTS.md`. Someone who keeps one instruction file for several agents is usually careful about what each tool sends home, and teams on Bedrock, Vertex or a gateway often disable nonessential traffic by policy. They all get a feature that is announced as available and then does nothing.
+
+The silence is the worst part. I confirmed the cause with a canary word and a string search through the binary, and most people will not do that. They will conclude that the model ignores their instructions, and they will spend time on prompts when the file never reached the model in the first place.
+
+A privacy setting should never quietly switch off unrelated local behavior. If Anthropic wants a staged rollout, the fallback for a flag that cannot be fetched should be the documented behavior, or at least a visible message that says what was skipped and why.
+
 ## What I would like to see
 
 - Reading a local file should not depend on telemetry. If the gate has to stay for a gradual rollout, a startup warning when an `AGENTS.md` is present and skipped would save people the time I spent on a canary test.
