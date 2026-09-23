@@ -53,6 +53,8 @@ Opening the PR triggers:
 
 - **GitHub Actions** (`.github/workflows/perf.yml`) - runs `budget` and `lighthouse` jobs. Required to pass before merge.
 - **Cloudflare Pages preview** - auto-deploys the branch to `https://<branch>.blog-szypowicz.pages.dev/`. Open it on the iPad / desktop to visually verify.
+  Preview builds render drafts and future-dated posts; production does not. This comes from `HUGO_BUILDDRAFTS` and `HUGO_BUILDFUTURE` set on the Pages **Preview** environment only (dashboard, outside this repo, alongside the `HUGO_VERSION` pin). So a post kept at `draft = true` is readable on the preview URL and stays unpublished when the branch merges.
+  Note the perf budget in CI builds without drafts. To measure a draft locally, run `HUGO_BUILDDRAFTS=true HUGO_BUILDFUTURE=true ./scripts/budget.sh`.
 
 Once green:
 
