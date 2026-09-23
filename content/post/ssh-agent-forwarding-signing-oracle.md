@@ -1,6 +1,6 @@
 +++
 title       = "Agent forwarding leaves a signing oracle on every host you land on"
-date        = "2026-07-31T12:00:00+02:00"
+date        = "2026-09-23T10:00:00+02:00"
 description = "ssh -A exposes your agent's socket on the remote host, and anyone who can connect to that socket can authenticate as you for as long as your session lasts. ProxyJump moves the same traffic through the same box without leaving anything there to use."
 tags        = ["ssh", "security", "proxyjump", "agent-forwarding"]
 categories  = ["security"]
@@ -134,8 +134,8 @@ That gives two properties, and neither of them is new machinery:
   end of the tunnel, so a bastion that tries to sit in the middle fails the check.
   The bastion's own key is verified locally too, by the first ssh process.
 
-Nothing is placed on the bastion, so there is nothing on it to abuse. No socket, no
-signing oracle, no keys.
+Nothing is placed on the bastion, so there is nothing on it to abuse. It holds no
+socket and no keys, and it has nothing it can ask to sign.
 
 ```
 Host bastion
@@ -161,7 +161,7 @@ Sometimes the work genuinely runs on the remote host. In rough order of value:
   name already present in `known_hosts` when you run `ssh-add`.
 - **Touch per use.** A FIDO2 `sk-` key or a Secure Enclave key makes every
   signature need a physical tap, so silent background use fails and an unexpected
-  prompt is your cue to refuse. It is defence in depth, and prompt fatigue defeats
+  prompt is your cue to refuse. It is defense in depth, and prompt fatigue defeats
   it.
 - **Short-lived credentials.** `ssh-add -t 30`, or short-TTL certificates from a CA
   scoped to a principal and a host. A captured signature is useless outside its
@@ -174,7 +174,7 @@ people end up forwarding to machines they never thought about.
 
 - Agent forwarding puts a socket on the remote host that signs on demand, and root
   on that host can use it without your shell, your terminal, or your knowledge.
-- The exposure lasts as long as the session, which is long enough.
+- The exposure lasts as long as the session, and a few seconds are enough to use it.
 - If you are only passing through a box, `-J` removes the entire problem, because
   authentication runs end to end from your laptop and the jump host relays
   ciphertext.

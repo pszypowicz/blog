@@ -14,8 +14,9 @@ naming the host it is talking to, and a forwarded connection collects one of the
 per hop. It is the mechanism behind the destination constraints I recommended at the
 end of
 [the post on what agent forwarding exposes](/p/agent-forwarding-leaves-a-signing-oracle-on-every-host-you-land-on/),
-and I built per-destination approval on top of the same chain, which meant reading
-carefully what the agent does with it.
+and I build per-destination approval on top of the same chain in
+[Sequester](https://github.com/pszypowicz/sequester), my own agent. That meant
+reading carefully what OpenSSH's agent does with it.
 
 The chain is recorded for every key. It is consulted for keys that were added with
 destination constraints, and for nothing else.
@@ -81,12 +82,16 @@ ordinary keys.
 
 ## The chain accumulates one binding per hop
 
-I ran this against four Alpine containers, hopping `hop1` through `hop4` with `-A`
-at every step. All four were reached, and the deepest signature request carried the
-full route in order:
+I ran this against four Alpine containers running OpenSSH 9.7, hopping `hop1`
+through `hop4` with `-A` at every step, with OpenSSH 10.3's `ssh-agent -d` on my
+laptop. All four were reached. This is the agent's log for the deepest signature
+request, with one binding per hop in order, `hop1` in slot 0 and `hop4` in slot 3:
 
 ```text
-chain SHA256:J06Lk+z... > SHA256:rlJZ+Lx... > SHA256:z9mRrd... > SHA256:XlJsTi...
+debug1: process_ext_session_bind: recorded ED25519 SHA256:IwfWlXD7sGWtjEj3Te2IWSQa3+SilCnX4WPIyp9apf4 (slot 0 of 16)
+debug1: process_ext_session_bind: recorded ED25519 SHA256:J6DItnJex4LiGr7f5FU4hEoo+gkc/f13GhvCr0OwS04 (slot 1 of 16)
+debug1: process_ext_session_bind: recorded ED25519 SHA256:Im1pRijlSNXXHVe9LKsIRWI55+GtsHjYdXxuDqqiazM (slot 2 of 16)
+debug1: process_ext_session_bind: recorded ED25519 SHA256:EF6oaUyPJrOLejcJ/JuGOJBZP0GFzyUAr3CHIcCcTRI (slot 3 of 16)
 ```
 
 The ordering holds because of when the binding is sent, which OpenSSH describes in
@@ -98,8 +103,8 @@ its [agent restriction notes](https://www.openssh.com/agent-restrict.html):
 
 One lab detail cost me an afternoon. My first image generated the host key at build
 time, so all four containers shared one identity and the chain came back as the
-same fingerprint repeated four times. Generate host keys in the entrypoint, not the
-`Dockerfile`, or you are testing nothing.
+same fingerprint repeated four times. Generate the host keys in the entrypoint, so
+that every container gets its own identity when it starts.
 
 ## The agent verifies every binding it records
 
@@ -115,11 +120,20 @@ if ((r = sshkey_verify(key, sshbuf_ptr(sig), sshbuf_len(sig),
 }
 ```
 
+A binding with the real host key of `hop2` and a signature from some other key
+gets exactly that:
+
+```text
+process_ext_session_bind: sshkey_verify for ED25519 SHA256:J6DItnJex4LiGr7f5FU4hEoo+gkc/f13GhvCr0OwS04: incorrect signature
+```
+
 A failure drops the binding and returns `SSH_AGENT_EXTENSION_FAILURE` without
 killing the connection, and it leaves a mark. The agent sets a flag the moment a
-bind is attempted, and any later request for a destination-constrained key on that
-same socket is refused outright with `previous session bind failed on socket`. One
-bad binding poisons the connection for constrained keys. It also rejects a session
+bind is attempted. A connection with no bindings at all normally counts as local
+use, but if a bind was attempted and none succeeded, a request for a
+destination-constrained key on that socket is refused with
+`previous session bind failed on socket`. So a failed bind cannot turn a forwarded
+connection into one that looks local. The agent also rejects a session
 ID already recorded against a different host key, and any binding that arrives after
 the connection has been bound for authentication. The exact same binding sent twice
 is accepted as a no-op.
@@ -128,7 +142,14 @@ is accepted as a no-op.
 
 Here is the part that surprised me. `identity_permitted()` returns success
 immediately when the key carries no destination constraints, so the recorded chain
-is never examined:
+is never examined. The deepest request above went straight from four bindings to a
+signature:
+
+```text
+debug3: identity_permitted: entering: key ED25519 comment "sshlab-throwaway-client", 4 socket bindings, 0 constraints
+debug1: process_sign_request2: entering
+debug1: process_sign_request2: good signature
+```
 
 | key added with        | chain recorded | chain checked before signing |
 | --------------------- | -------------- | ---------------------------- |
@@ -138,6 +159,23 @@ is never examined:
 For a plain key, session-bind is bookkeeping that nothing acts on. Everything
 written about per-hop policy only becomes true once the key is constrained, or once
 some other agent decides to act on the chain itself.
+
+## What the agent checks before it signs with a constrained key
+
+A walk over the chain is not the whole check. `process_sign_request2()` also parses
+the data it is asked to sign, which for public key authentication is the userauth
+request, and compares it with the last binding on the socket:
+
+- The session identifier in the request must equal the one in the most recent
+  binding. Otherwise the agent refuses with `unexpected session ID`.
+- The server host key embedded in the request must be the most recently bound host
+  key. Over a forwarded connection the request must carry a host key at all, which
+  is what the `publickey-hostbound-v00@openssh.com` method adds.
+- The last binding must be for authentication and not for forwarding, and every
+  binding before it must be a forwarding one.
+
+These checks tie the signature to the session that is really being authenticated.
+A valid binding for some other session cannot be reused to approve it.
 
 ## What ssh-add -h needs before it works
 
@@ -154,6 +192,16 @@ ssh-add -h bastion.example.com \
         ~/.ssh/id_ed25519
 ```
 
+In the lab I added the key with `-h hop1 -h "hop1>hop2"`. Going through `hop1` to
+`hop2` worked, and going through `hop1` to `hop3` failed with
+`Permission denied (publickey,keyboard-interactive)`. The agent did not refuse a
+signature there. It hid the key, so the client had nothing to offer:
+
+```text
+debug2: permitted_by_dest_constraints: ED25519 identity "sshlab-throwaway-client" not permitted for this destination
+debug2: process_request_identities: replying with 0 allowed of 1 available keys
+```
+
 The requirements are spread across the manual and easy to trip over:
 
 - OpenSSH 8.9 or newer for the agent and for the client that adds the key.
@@ -164,7 +212,7 @@ The requirements are spread across the manual and easy to trip over:
   an sshd new enough for host-bound authentication. The manual says support in both
   the remote client and server is required over a forwarded channel.
 
-And the limit, stated in the same page: constraints do not stop an attacker with
+The same page also states the limit. Constraints do not stop an attacker with
 access to a remote `SSH_AUTH_SOCK` from forwarding it onward and using it, as long
 as they use it toward a destination you permitted.
 
@@ -178,16 +226,20 @@ OpenSSH covers explicitly:
 > because of the binding between the signature and the server hostkey.
 
 That guarantee is worth exactly as much as the agent's willingness to check the
-signature, which is the subject of the next post.
+signature. My own agent skipped that check for an afternoon, which is the subject of
+[the next post](/p/the-session-bind-signature-check-i-skipped-in-my-own-ssh-agent/).
 
 ## Summary
 
 - Every ssh client binds its agent connection to the host it is talking to, and a
   forwarded chain accumulates one binding per hop, in order.
-- The agent verifies the host signature in each binding, and a single failed bind
-  disables constrained keys on that connection for good.
+- The agent verifies the host signature in each binding and drops any binding that
+  fails. A connection where every bind failed cannot use constrained keys as if it
+  were local.
 - The chain is recorded for all keys and checked only for keys added with
   `ssh-add -h`. Without constraints it changes nothing about what gets signed.
+- For a constrained key the signed request must also name the session and host key
+  of the last binding, so a binding from another session cannot approve it.
 - Destination constraints need 8.9 or newer at the agent, a cooperating client at
   each hop, a recent sshd at the destination, and every named host in `known_hosts`
   when you add the key.
