@@ -57,4 +57,8 @@ With that file in place, the same canary test returns the word with `CLAUDE_CODE
 
 ## What I would like to see
 
-Reading a local file should not depend on telemetry. If the gate has to stay for a gradual rollout, a startup warning when an `AGENTS.md` is present and skipped would save people the time I spent on a canary test. Until then, the one-line `CLAUDE.md` is the reliable option.
+- Reading a local file should not depend on telemetry. If the gate has to stay for a gradual rollout, a startup warning when an `AGENTS.md` is present and skipped would save people the time I spent on a canary test.
+- A global `AGENTS.md`. The plugin looks for `AGENTS.md` and `.claude/AGENTS.md` in project directories only, and there is no user-level file next to the user `CLAUDE.md`. Codex reads a global `~/.codex/AGENTS.md`, and the `/import` command in Claude Code can copy it into the user `CLAUDE.md`, but the copy does not follow later edits. If you keep one set of personal instructions for several agents, you still need an `@` import in the user `CLAUDE.md` that points at the shared file.
+- Native support for shared agent skills. Codex reads skills from `.agents/skills` in the project and from `~/.agents/skills` in the home directory. Claude Code 2.1.280 knows those paths only in `/import`, which copies the skills into `.claude/skills`. I put a canary skill in `.agents/skills` and Claude Code did not list it, but it listed the same skill from `.claude/skills` in the same repo. A copy drifts from the source, so I link `.claude/skills` to `../.agents/skills` instead, and Claude Code follows that symlink.
+
+Until then, I use the one-line `CLAUDE.md` for instructions and a symlink for skills.
