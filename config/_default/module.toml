@@ -3,8 +3,8 @@
 # build WARN, not an error; CI and Pages enforce the exact binary themselves.
 [hugoVersion]
   extended = true
-  min      = "0.164.0"
-  max      = "0.164.0"
+  min      = "0.166.0"
+  max      = "0.166.0"
 
 [[imports]]
   path = "github.com/pszypowicz/hugo-theme-pager"
