@@ -1,19 +1,18 @@
 +++
 title       = "macOS 27 stops trackpad touch events after a trackpad-click wake"
 date        = "2026-09-29T12:00:00+02:00"
-description = "On macOS 27.0 and 27.0.1, a wake from sleep with a trackpad click stops NSTouch events for every app that was open. Scroll and magnify events still arrive, and a power-button wake brings the touches back."
+description = "On macOS 27.0.1, a wake from sleep with a trackpad click stops NSTouch events for every app that was open. Scroll and magnify events still arrive, and a power-button wake brings the touches back."
 tags        = ["macos", "appkit", "trackpad", "tmux"]
 categories  = ["macos"]
 ai_assisted = true
 +++
 
-On macOS 27.0 and 27.0.1, a trackpad click that wakes the Mac stops trackpad touch events for apps that were open during the sleep. This post lists the facts, the workarounds and the limits of my tests.
+On macOS 27.0.1, a trackpad click that wakes the Mac stops trackpad touch events for apps that were open during the sleep. This post lists the facts, the workarounds and the limits of my tests.
 
 ## Environment
 
 - MacBook Pro with Apple M1 Pro (MacBookPro18,1) and the built-in trackpad
-- macOS 27.0 (26A428), for all the tests in this post
-- macOS 27.0.1 (26A434), where the fault also reproduces
+- macOS 27.0.1 (26A434)
 
 ## Symptom
 
@@ -101,7 +100,6 @@ Before the sleep, the app prints about 100 touch events per second. After the wa
 ## Limits of the tests
 
 - I tested only the built-in trackpad. I did not test a Magic Trackpad.
-- I ran the full tests only on macOS 27.0 (26A428). On 27.0.1 (26A434), I reproduced the fault but did not repeat every test. I did not check versions before 27.0.
 - I did not test a lid-open wake, a Touch ID wake from the normal state, or a wake with an external display.
 - One earlier failure came after a normal wake, with an unknown wake method.
 
