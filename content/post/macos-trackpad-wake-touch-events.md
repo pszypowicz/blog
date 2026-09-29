@@ -1,13 +1,13 @@
 +++
-title       = "macOS 27 stops trackpad touch events after a trackpad-click wake"
+title       = "macOS 27 stops trackpad touch events after a lid-open or trackpad-click wake"
 date        = "2026-09-29T12:00:00+02:00"
-description = "On macOS 27.0.1, a wake from sleep with a trackpad click stops NSTouch events for every app that was open. Scroll and magnify events still arrive, and a power-button wake brings the touches back."
+description = "On macOS 27.0.1, if you open the lid or click the trackpad to wake the Mac, apps that started before the sleep lose NSTouch events. Scroll and magnify events still arrive, and a power-button wake brings the touches back."
 tags        = ["macos", "appkit", "trackpad", "tmux"]
 categories  = ["macos"]
 ai_assisted = true
 +++
 
-On macOS 27.0.1, a trackpad click that wakes the Mac stops trackpad touch events for apps that were open during the sleep. This post lists the facts, the workarounds and the limits of my tests.
+On macOS 27.0.1, if you open the lid or click the trackpad to wake the Mac, apps that started before the sleep lose trackpad touch events. This post lists the facts, the workarounds and the limits of my tests.
 
 ## Environment
 
@@ -22,15 +22,16 @@ On macOS 27.0.1, a trackpad click that wakes the Mac stops trackpad touch events
 - An app that starts after the wake receives touch events normally.
 - A minimal AppKit app with one view shows the same result, so the fault is in macOS.
 
-In my setup, a [Ghostty fork](https://github.com/pszypowicz/ghostty) reads raw touches with [TrackpadKit](https://github.com/pszypowicz/TrackpadKit) and sends swipe and pinch gestures to a [tmux fork](https://github.com/pszypowicz/tmux). After a trackpad-click wake, the swipe between tmux windows stopped.
+In my setup, a [Ghostty fork](https://github.com/pszypowicz/ghostty) reads raw touches with [TrackpadKit](https://github.com/pszypowicz/TrackpadKit) and sends swipe and pinch gestures to a [tmux fork](https://github.com/pszypowicz/tmux). After a wake, the swipe between tmux windows stopped.
 
 ## Wake results
 
-The test app was open when the Mac went to sleep with `pmset sleepnow`.
+In every test, the test app started before the sleep.
 
 | Wake method             | From the normal state | From the broken state |
 | ----------------------- | --------------------- | --------------------- |
 | Trackpad click          | touches stop          | stays broken          |
+| Lid open                | touches stop          | not tested            |
 | Key press               | touches continue      | stays broken          |
 | Power button (Touch ID) | not tested            | touches return        |
 
@@ -48,7 +49,7 @@ At the power-button wake, the terminal, which was broken at the same time, recov
 
 ## Workarounds
 
-- Wake the Mac with the power button (Touch ID) or a key.
+- Wake the Mac with a key press. In the tests, a trackpad-click wake and a lid-open wake both stopped the touches.
 - If the gestures already stopped, run `pmset sleepnow` and wake the Mac with the power button.
 - As a last resort, restart the app. With tmux, the sessions survive a terminal restart.
 
@@ -100,7 +101,7 @@ Before the sleep, the app prints about 100 touch events per second. After the wa
 ## Limits of the tests
 
 - I tested only the built-in trackpad. I did not test a Magic Trackpad.
-- I did not test a lid-open wake, a Touch ID wake from the normal state, or a wake with an external display.
+- I did not test a Touch ID wake from the normal state or a wake with an external display.
 - One earlier failure came after a normal wake, with an unknown wake method.
 
 I reported the problem to Apple in Feedback Assistant.
